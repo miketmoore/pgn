@@ -77,6 +77,15 @@ func TestOuptut(t *testing.T) {
 		},
 		Movetext: pgn.Movetext{
 			pgn.MovetextEntry{White: "e4", Black: "e5"},
+			pgn.MovetextEntry{White: "Nf3", Black: "Nc6"},
+			pgn.MovetextEntry{White: "Bb5", Black: "a6", Comments: []string{"This opening is called the Ruy Lopez."}},
+			pgn.MovetextEntry{White: "Ba4", Black: "Nf6"},
+			pgn.MovetextEntry{White: "O-O", Black: "Be7"},
+			pgn.MovetextEntry{White: "Re1", Black: "b5"},
+			pgn.MovetextEntry{White: "Bb3", Black: "d6"},
+			pgn.MovetextEntry{White: "c3", Black: "O-O"},
+			pgn.MovetextEntry{White: "h3", Black: "Nb8"},
+			pgn.MovetextEntry{White: "d4", Black: "Nbd7"},
 		},
 	}
 	var expected = `[Event "F/S Return Match"]
@@ -87,7 +96,7 @@ func TestOuptut(t *testing.T) {
 [Black "Spassky, Boris V."]
 [Result "1/2-1/2"]
 
-1. e4 e5`
+1. e4 e5 2. Nf3 Nc6 3. Bb5 a6 {This opening is called the Ruy Lopez.} 4. Ba4 Nf6 5. O-O Be7 6. Re1 b5 7. Bb3 d6 8. c3 O-O 9. h3 Nb8 10. d4 Nbd7`
 
 	got := parsed.String()
 	if got != expected {

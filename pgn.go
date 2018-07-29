@@ -24,6 +24,11 @@ func (p PGN) String() string {
 	str += "\n"
 	for i, entry := range p.Movetext {
 		str += fmt.Sprintf("%d. %s %s", i+1, entry.White, entry.Black)
+		if len(entry.Comments) > 0 {
+			for _, comment := range entry.Comments {
+				str += fmt.Sprintf(" {%s}", comment)
+			}
+		}
 		if i < len(p.Movetext)-1 {
 			str += " "
 		}
