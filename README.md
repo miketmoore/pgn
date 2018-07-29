@@ -1,6 +1,9 @@
-# PGN
+# Portable Game Notation (PGN) Parser
 
-https://www.chessclub.com/help/PGN-spec
+This is a PGN parser implemented in [the Go programming language](https://golang.org/). PGN is an international standard for recording chess games.
+
+- https://en.wikipedia.org/wiki/Portable_Game_Notation
+- https://www.chessclub.com/help/PGN-spec
 
 ## Usage
 
