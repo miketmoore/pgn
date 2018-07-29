@@ -16,7 +16,12 @@ type TagPairs struct {
 	Event, Site, Date, Round, White, Black, Result string
 }
 
-type Movetext [][]string
+type Movetext []MovetextEntry
+
+type MovetextEntry struct {
+	White, Black string
+	Comments     []string
+}
 
 func Parse(raw string) PGN {
 	r := strings.NewReader(raw)
@@ -99,8 +104,13 @@ func parseMovetext(lines []string) Movetext {
 				moves[i] = strings.TrimSpace(moves[i])
 			}
 			fmt.Println(moves)
+
 			// final = append(final, moves)
-			mt = append(mt, moves)
+			// mt = append(mt, moves)
+			mt = append(mt, MovetextEntry{
+				White: moves[0],
+				Black: moves[1],
+			})
 		}
 
 	}

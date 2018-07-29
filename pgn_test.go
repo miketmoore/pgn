@@ -46,9 +46,9 @@ func TestParse(t *testing.T) {
 			Result: "1/2-1/2",
 		},
 		Movetext: pgn.Movetext{
-			[]string{"e4", "e5"},
-			[]string{"Nf3", "Nc6"},
-			[]string{"Bb5", "a6"},
+			pgn.MovetextEntry{White: "e4", Black: "e5"},
+			pgn.MovetextEntry{White: "Nf3", Black: "Nc6"},
+			pgn.MovetextEntry{White: "Bb5", Black: "a6"},
 		},
 	}
 	got := pgn.Parse(game)
@@ -57,24 +57,27 @@ func TestParse(t *testing.T) {
 		fmt.Println("Expected: ", expected)
 		t.Fatal("failed")
 	}
-	if !assertStringSliceEquality(expected.Movetext, got.Movetext) {
+	if !assertMovetextEquality(expected.Movetext, got.Movetext) {
 		fmt.Println("Got     :", got.Movetext)
 		fmt.Println("Expected: ", expected.Movetext)
 		t.Fatal("movetext is unexpected")
 	}
 }
 
-func assertStringSliceEquality(a, b pgn.Movetext) bool {
+func assertMovetextEquality(a, b pgn.Movetext) bool {
 	if len(a) != len(b) {
 		return false
 	}
 	for i, valA := range a {
-		for j, valB := range valA {
-			fmt.Println(valB)
-			if valB != b[i][j] {
-				return false
-			}
+		if valA.White != b[i].White || valA.Black != b[i].Black {
+			return false
 		}
+		// for j, valB := range valA {
+		// 	fmt.Println(valB)
+		// 	if valB != b[i][j] {
+		// 		return false
+		// 	}
+		// }
 	}
 	return true
 }
