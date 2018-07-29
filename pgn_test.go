@@ -64,6 +64,40 @@ func TestParse(t *testing.T) {
 	}
 }
 
+func TestOuptut(t *testing.T) {
+	parsed := pgn.PGN{
+		TagPairs: pgn.TagPairs{
+			Event:  "F/S Return Match",
+			Site:   "Belgrade, Serbia JUG",
+			Date:   "1992.11.04",
+			Round:  "29",
+			White:  "Fischer, Robert J.",
+			Black:  "Spassky, Boris V.",
+			Result: "1/2-1/2",
+		},
+		Movetext: pgn.Movetext{
+			pgn.MovetextEntry{White: "e4", Black: "e5"},
+		},
+	}
+	var expected = `[Event "F/S Return Match"]
+[Site "Belgrade, Serbia JUG"]
+[Date "1992.11.04"]
+[Round "29"]
+[White "Fischer, Robert J."]
+[Black "Spassky, Boris V."]
+[Result "1/2-1/2"]
+
+1. e4 e5`
+
+	got := parsed.String()
+	if got != expected {
+		fmt.Printf("Got:\n%s\n", got)
+		fmt.Printf("Expected:\n%s\n", expected)
+		t.Fatal("output failed")
+	}
+
+}
+
 func assertMovetextEquality(a, b pgn.Movetext) bool {
 	if len(a) != len(b) {
 		return false

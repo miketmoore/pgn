@@ -4,6 +4,8 @@ This is a PGN parser implemented in [the Go programming language](https://golang
 
 ## Usage
 
+### Parse PGN File
+
 ```
 var game = `[Event "F/S Return Match"]
 [Site "Belgrade, Serbia JUG"]
@@ -36,6 +38,26 @@ fmt.Println()
 for i, entry := range parsed.Movetext {
     fmt.Printf("%d. %s %s %s\n", entry.White, entry.Black, strings.Join(entry.Comments, ", "))
 }
+```
+
+### Build PGN Output
+
+```
+parsed := pgn.PGN{
+    TagPairs: pgn.TagPairs{
+        Event: "Belgrade, Serbia JUG",
+        Date: "1992.11.04",
+        Round: "29",
+        White: "Fischer, Robert J.",
+        Black: "Spassky, Boris V.",
+        Result: "1/2-1/2",
+    },
+    Movetext: pgn.Movetext{
+        pgn.MovetextEntry{White:"e4",Black:"e5"},
+    }
+}
+output := parsed.String()
+fmt.Println(output)
 ```
 
 ## References

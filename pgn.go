@@ -12,6 +12,25 @@ type PGN struct {
 	Movetext Movetext
 }
 
+func (p PGN) String() string {
+	str := ""
+	str += fmt.Sprintf("[Event \"%s\"]\n", p.TagPairs.Event)
+	str += fmt.Sprintf("[Site \"%s\"]\n", p.TagPairs.Site)
+	str += fmt.Sprintf("[Date \"%s\"]\n", p.TagPairs.Date)
+	str += fmt.Sprintf("[Round \"%s\"]\n", p.TagPairs.Round)
+	str += fmt.Sprintf("[White \"%s\"]\n", p.TagPairs.White)
+	str += fmt.Sprintf("[Black \"%s\"]\n", p.TagPairs.Black)
+	str += fmt.Sprintf("[Result \"%s\"]\n", p.TagPairs.Result)
+	str += "\n"
+	for i, entry := range p.Movetext {
+		str += fmt.Sprintf("%d. %s %s", i+1, entry.White, entry.Black)
+		if i < len(p.Movetext)-1 {
+			str += " "
+		}
+	}
+	return str
+}
+
 type TagPairs struct {
 	Event, Site, Date, Round, White, Black, Result string
 }
