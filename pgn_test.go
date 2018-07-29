@@ -32,7 +32,7 @@ var game = `[Event "F/S Return Match"]
 [Black "Spassky, Boris V."]
 [Result "1/2-1/2"]
 
-1. e4 e5 2. Nf3 Nc6 3. Bb5 a6`
+1. e4 e5 2. Nf3 Nc6 3. Bb5 a6 {This opening is called the Ruy Lopez.}`
 
 func TestParse(t *testing.T) {
 	expected := pgn.PGN{
@@ -48,7 +48,7 @@ func TestParse(t *testing.T) {
 		Movetext: pgn.Movetext{
 			pgn.MovetextEntry{White: "e4", Black: "e5"},
 			pgn.MovetextEntry{White: "Nf3", Black: "Nc6"},
-			pgn.MovetextEntry{White: "Bb5", Black: "a6"},
+			pgn.MovetextEntry{White: "Bb5", Black: "a6", Comments: []string{"This opening is called the Ruy Lopez."}},
 		},
 	}
 	got := pgn.Parse(game)
@@ -70,6 +70,9 @@ func assertMovetextEquality(a, b pgn.Movetext) bool {
 	}
 	for i, valA := range a {
 		if valA.White != b[i].White || valA.Black != b[i].Black {
+			return false
+		}
+		if len(valA.Comments) != len(b[i].Comments) {
 			return false
 		}
 		// for j, valB := range valA {
