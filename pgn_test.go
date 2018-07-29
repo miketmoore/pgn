@@ -35,11 +35,34 @@ func TestParse(t *testing.T) {
 			Black:  "Spassky, Boris V.",
 			Result: "1/2-1/2",
 		},
+		Movetext: pgn.Movetext{
+			[]string{"e4", "e5"},
+		},
 	}
 	got := pgn.Parse(game)
-	if got != expected {
+	if got.TagPairs != expected.TagPairs {
 		fmt.Println("Got     :", got)
 		fmt.Println("Expected: ", expected)
 		t.Fatal("failed")
 	}
+	if !assertStringSliceEquality(expected.Movetext, got.Movetext) {
+		fmt.Println("Got     :", got.Movetext)
+		fmt.Println("Expected: ", expected.Movetext)
+		t.Fatal("movetext is unexpected")
+	}
+}
+
+func assertStringSliceEquality(a, b pgn.Movetext) bool {
+	if len(a) != len(b) {
+		return false
+	}
+	for i, valA := range a {
+		for j, valB := range valA {
+			fmt.Println(valB)
+			if valB != b[i][j] {
+				return false
+			}
+		}
+	}
+	return true
 }
