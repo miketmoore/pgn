@@ -2,6 +2,7 @@ package pgn
 
 import (
 	"bufio"
+	"fmt"
 	"regexp"
 	"strings"
 )
@@ -83,11 +84,13 @@ func parseMovetext(lines []string) Movetext {
 
 	for _, val := range split {
 		if strings.TrimSpace(val) != "" {
+			// TODO get comments
 			moves := strings.Split(strings.TrimSpace(val), " ")
 			for i := 0; i < len(moves); i++ {
 				moves[i] = strings.TrimSpace(moves[i])
+				fmt.Println(moves[i])
 			}
-
+			fmt.Println(moves)
 			mt = append(mt, MovetextEntry{
 				White: moves[0],
 				Black: moves[1],
