@@ -32,7 +32,7 @@ var game = `[Event "F/S Return Match"]
 [Black "Spassky, Boris V."]
 [Result "1/2-1/2"]
 
-1. e4 e5 2. Nf3 Nc6 3. Bb5 a6 {This opening is called the Ruy Lopez.}`
+1. e4 e5 2. Nf3 Nc6 3. Bb5 a6 {This opening is called the Ruy Lopez.} 4. Ba4 Nf6 5. O-O Be7 6. Re1 b5 7. Bb3 d6 8. c3 O-O 9. h3 Nb8 10. d4 Nbd7`
 
 func TestParse(t *testing.T) {
 	expected := pgn.PGN{
@@ -48,19 +48,26 @@ func TestParse(t *testing.T) {
 		Movetext: pgn.Movetext{
 			pgn.MovetextEntry{White: "e4", Black: "e5"},
 			pgn.MovetextEntry{White: "Nf3", Black: "Nc6"},
-			pgn.MovetextEntry{White: "Bb5", Black: "a6", Comments: []string{"This opening is called the Ruy Lopez."}},
+			pgn.MovetextEntry{White: "Bb5", Black: "a6", Comments: []pgn.Comment{"This opening is called the Ruy Lopez."}},
+			pgn.MovetextEntry{White: "Ba4", Black: "Nf6"},
+			pgn.MovetextEntry{White: "O-O", Black: "Be7"},
+			pgn.MovetextEntry{White: "Re1", Black: "b5"},
+			pgn.MovetextEntry{White: "Bb3", Black: "d6"},
+			pgn.MovetextEntry{White: "c3", Black: "O-O"},
+			pgn.MovetextEntry{White: "h3", Black: "Nb8"},
+			pgn.MovetextEntry{White: "d4", Black: "Nbd7"},
 		},
 	}
 	got := pgn.Parse(game)
 	if got.TagPairs != expected.TagPairs {
-		fmt.Println("Got     :", got)
-		fmt.Println("Expected: ", expected)
-		t.Fatal("failed")
+		fmt.Printf("Got:\n%s\n", got)
+		fmt.Printf("Expected:\n%s\n", expected)
+		t.Fatal("Parsing PGN string failed")
 	}
 	if !assertMovetextEquality(expected.Movetext, got.Movetext) {
-		fmt.Println("Got     :", got.Movetext)
-		fmt.Println("Expected: ", expected.Movetext)
-		t.Fatal("movetext is unexpected")
+		fmt.Printf("Got:\n%s\n", got)
+		fmt.Printf("Expected:\n%s\n", expected)
+		t.Fatal("Movetext is unexpected during PGN parsing")
 	}
 }
 
@@ -78,7 +85,7 @@ func TestOuptut(t *testing.T) {
 		Movetext: pgn.Movetext{
 			pgn.MovetextEntry{White: "e4", Black: "e5"},
 			pgn.MovetextEntry{White: "Nf3", Black: "Nc6"},
-			pgn.MovetextEntry{White: "Bb5", Black: "a6", Comments: []string{"This opening is called the Ruy Lopez."}},
+			pgn.MovetextEntry{White: "Bb5", Black: "a6", Comments: []pgn.Comment{"This opening is called the Ruy Lopez."}},
 			pgn.MovetextEntry{White: "Ba4", Black: "Nf6"},
 			pgn.MovetextEntry{White: "O-O", Black: "Be7"},
 			pgn.MovetextEntry{White: "Re1", Black: "b5"},
@@ -118,12 +125,6 @@ func assertMovetextEquality(a, b pgn.Movetext) bool {
 		if len(valA.Comments) != len(b[i].Comments) {
 			return false
 		}
-		// for j, valB := range valA {
-		// 	fmt.Println(valB)
-		// 	if valB != b[i][j] {
-		// 		return false
-		// 	}
-		// }
 	}
 	return true
 }

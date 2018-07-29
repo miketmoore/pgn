@@ -42,9 +42,11 @@ type TagPairs struct {
 
 type Movetext []MovetextEntry
 
+type Comment string
+
 type MovetextEntry struct {
 	White, Black string
-	Comments     []string
+	Comments     []Comment
 }
 
 func Parse(raw string) PGN {
@@ -92,8 +94,6 @@ func parseSevenTagRoster(line string) (string, string, bool) {
 	var re = regexp.MustCompile(`\[(.*) "(.*)"\]`)
 	matches := re.FindStringSubmatch(line)
 	if len(matches) == 3 {
-		// fmt.Println(matches[1])
-		// fmt.Println(matches[2])
 		return matches[1], matches[2], true
 	}
 	return "", "", false
@@ -103,25 +103,36 @@ func parseMovetext(lines []string) Movetext {
 	mt := Movetext{}
 	str := strings.Join(lines, " ")
 
-	re := regexp.MustCompile(`[1-9]\. `)
+	re := regexp.MustCompile(`[1-9].?\. `)
 	split := re.Split(str, -1)
 
-	for _, val := range split {
-		if strings.TrimSpace(val) != "" {
-			// TODO get comments
-			moves := strings.Split(strings.TrimSpace(val), " ")
+	for _, movetextSection := range split {
+		if strings.TrimSpace(movetextSection) != "" {
+			comments := parseComments(movetextSection)
+			moves := strings.Split(strings.TrimSpace(movetextSection), " ")
 			for i := 0; i < len(moves); i++ {
 				moves[i] = strings.TrimSpace(moves[i])
-				fmt.Println(moves[i])
 			}
-			fmt.Println(moves)
 			mt = append(mt, MovetextEntry{
-				White: moves[0],
-				Black: moves[1],
+				White:    moves[0],
+				Black:    moves[1],
+				Comments: comments,
 			})
 		}
 
 	}
 
 	return mt
+}
+
+func parseComments(val string) []Comment {
+	commentsRe := regexp.MustCompile(`\{(.*)\}`)
+	matches := commentsRe.FindAllStringSubmatch(val, -1)
+	comments := []Comment{}
+	if len(matches) > 0 {
+		for _, match := range matches {
+			comments = append(comments, Comment(match[1]))
+		}
+	}
+	return comments
 }
