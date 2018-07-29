@@ -32,7 +32,7 @@ var game = `[Event "F/S Return Match"]
 [Black "Spassky, Boris V."]
 [Result "1/2-1/2"]
 
-1. e4 e5`
+1. e4 e5 2. Nf3 Nc6 3. Bb5 a6`
 
 func TestParse(t *testing.T) {
 	expected := pgn.PGN{
@@ -47,6 +47,8 @@ func TestParse(t *testing.T) {
 		},
 		Movetext: pgn.Movetext{
 			[]string{"e4", "e5"},
+			[]string{"Nf3", "Nc6"},
+			[]string{"Bb5", "a6"},
 		},
 	}
 	got := pgn.Parse(game)
