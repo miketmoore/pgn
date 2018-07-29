@@ -2,9 +2,6 @@
 
 This is a PGN parser implemented in [the Go programming language](https://golang.org/). PGN is an international standard for recording chess games.
 
-- https://en.wikipedia.org/wiki/Portable_Game_Notation
-- https://www.chessclub.com/help/PGN-spec
-
 ## Usage
 
 ```
@@ -40,3 +37,8 @@ for i, entry := range parsed.Movetext {
     fmt.Printf("%d. %s %s %s\n", entry.White, entry.Black, strings.Join(entry.Comments, ", "))
 }
 ```
+
+## References
+
+- https://en.wikipedia.org/wiki/Portable_Game_Notation
+- https://www.chessclub.com/help/PGN-spec
