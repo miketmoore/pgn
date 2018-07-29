@@ -27,12 +27,18 @@ Nf2 42. g4 Bd3 43. Re6 1/2-1/2`
 func TestParse(t *testing.T) {
 	expected := pgn.PGN{
 		TagPairs: pgn.TagPairs{
-			Event: "F/S Return Match",
+			Event:  "F/S Return Match",
+			Site:   "Belgrade, Serbia JUG",
+			Date:   "1992.11.04",
+			Round:  "29",
+			White:  "Fischer, Robert J.",
+			Black:  "Spassky, Boris V.",
+			Result: "1/2-1/2",
 		},
 	}
 	got := pgn.Parse(game)
 	if got != expected {
-		fmt.Println("Got:", got)
+		fmt.Println("Got     :", got)
 		fmt.Println("Expected: ", expected)
 		t.Fatal("failed")
 	}
