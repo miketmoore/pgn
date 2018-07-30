@@ -12,7 +12,60 @@ type PGN struct {
 	Movetext Movetext
 }
 
-func (p PGN) String() string {
+func (p *PGN) RecordWhiteMove(file, rank string, capture bool, piece string, check bool) {
+	s := buildMoveString(file, rank, capture, piece, check)
+	p.Movetext = append(p.Movetext, MovetextEntry{White: s})
+}
+
+func (p *PGN) RecordBlackMove(file, rank string, capture bool, piece string, check bool) {
+	s := buildMoveString(file, rank, capture, piece, check)
+	move := p.Movetext[len(p.Movetext)-1]
+	move.Black = s
+	p.Movetext[len(p.Movetext)-1] = move
+}
+
+func buildMoveString(file, rank string, capture bool, piece string, check bool) string {
+	var s string
+	if capture {
+		if piece != "pawn" {
+			s = fmt.Sprintf("%sx%s%s", getPieceInitialByFullname(piece), file, rank)
+		} else {
+			s = fmt.Sprintf("x%s%s", file, rank)
+		}
+	} else {
+		if piece != "pawn" {
+			s = fmt.Sprintf("%s%s%s", getPieceInitialByFullname(piece), file, rank)
+		} else {
+			s = fmt.Sprintf("%s%s", file, rank)
+		}
+
+	}
+	if check {
+		s += "+"
+	}
+	return s
+}
+
+func getPieceInitialByFullname(fullname string) string {
+	fmt.Println("getPieceInitialByFullname", fullname)
+	switch fullname {
+	case "pawn":
+		return "P"
+	case "knight":
+		return "N"
+	case "bishop":
+		return "B"
+	case "rook":
+		return "R"
+	case "queen":
+		return "Q"
+	case "king":
+		return "K"
+	}
+	return ""
+}
+
+func (p *PGN) String() string {
 	str := ""
 	str += fmt.Sprintf("[Event \"%s\"]\n", p.TagPairs.Event)
 	str += fmt.Sprintf("[Site \"%s\"]\n", p.TagPairs.Site)
