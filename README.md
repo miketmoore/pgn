@@ -28,18 +28,7 @@ Nf2 42. g4 Bd3 43. Re6 1/2-1/2`
 
 parsed := pgn.Parse(game)
 
-fmt.Println("Mandatory Seven Tag Roster:")
-fmt.Println("Event: ", parsed.TagPairs.Event)
-fmt.Println("Site: ", parsed.TagPairs.Event)
-fmt.Println("Date: ", parsed.TagPairs.Event)
-fmt.Println("Round: ", parsed.TagPairs.Event)
-fmt.Println("White: ", parsed.TagPairs.Event)
-fmt.Println("Black: ", parsed.TagPairs.Event)
-fmt.Println("Result: ", parsed.TagPairs.Event)
-fmt.Println()
-for i, entry := range parsed.Movetext {
-    fmt.Printf("%d. %s %s %s\n", entry.White, entry.Black, strings.Join(entry.Comments, ", "))
-}
+// do something with the PGN struct instance...
 ```
 
 ### Build PGN Output
