@@ -23,7 +23,7 @@ func (p PGN) String() string {
 	str += fmt.Sprintf("[Result \"%s\"]\n", p.TagPairs.Result)
 	str += "\n"
 	for i, entry := range p.Movetext {
-		str += fmt.Sprintf("%d. %s %s", i+1, entry.White, entry.Black)
+		str += fmt.Sprintf("%d. %s%s %s%s", i+1, string(entry.White.File), string(entry.White.Rank), string(entry.Black.File), string(entry.Black.Rank))
 		if len(entry.Comments) > 0 {
 			for _, comment := range entry.Comments {
 				str += fmt.Sprintf(" {%s}", comment)
@@ -45,11 +45,19 @@ type Movetext []MovetextEntry
 type Comment string
 
 type MovetextEntry struct {
-	White, Black string
+	White, Black PlayerMove
 	Comments     []Comment
 }
 
-func Parse(raw string) PGN {
+type PGNParseError struct {
+	message string
+}
+
+func (e PGNParseError) Error() string {
+	return fmt.Sprintf("Parsing failed due to: %s", e.message)
+}
+
+func Parse(raw string) (PGN, error) {
 	r := strings.NewReader(raw)
 	scanner := bufio.NewScanner(r)
 	pgn := PGN{}
@@ -86,8 +94,12 @@ func Parse(raw string) PGN {
 		}
 
 	}
-	pgn.Movetext = parseMovetext(movetextLines)
-	return pgn
+	moveText, err := parseMovetext(movetextLines)
+	if err != nil {
+		return PGN{}, PGNParseError{message: fmt.Sprintf("Parsing movetext failed: %s", err)}
+	}
+	pgn.Movetext = moveText
+	return pgn, nil
 }
 
 func parseSevenTagRoster(line string) (string, string, bool) {
@@ -99,7 +111,7 @@ func parseSevenTagRoster(line string) (string, string, bool) {
 	return "", "", false
 }
 
-func parseMovetext(lines []string) Movetext {
+func parseMovetext(lines []string) (Movetext, error) {
 	mt := Movetext{}
 	str := strings.Join(lines, " ")
 
@@ -113,16 +125,41 @@ func parseMovetext(lines []string) Movetext {
 			for i := 0; i < len(moves); i++ {
 				moves[i] = strings.TrimSpace(moves[i])
 			}
+			var whiteMove PlayerMove
+			var blackMove PlayerMove
+			var ok bool
+			if whiteMove, ok = parsePlayerMove(moves[0]); !ok {
+				return Movetext{}, PGNParseError{message: fmt.Sprintf("Failed parsing white's move: [%s]", moves[0])}
+			}
+			if blackMove, ok = parsePlayerMove(moves[1]); !ok {
+				return Movetext{}, PGNParseError{message: fmt.Sprintf("Failed parsing black's move: [%s]", moves[1])}
+			}
 			mt = append(mt, MovetextEntry{
-				White:    moves[0],
-				Black:    moves[1],
+				White:    whiteMove,
+				Black:    blackMove,
 				Comments: comments,
 			})
 		}
 
 	}
 
-	return mt
+	return mt, nil
+}
+
+func parsePlayerMove(m string) (PlayerMove, bool) {
+	if len(m) == 2 {
+		// pawn
+		return PlayerMove{File: File(m[0]), Rank: Rank(m[1])}, true
+	} else if len(m) == 3 && strings.Index(m, "N") == 0 {
+		return PlayerMove{File: File(m[1]), Rank: Rank(m[2])}, true
+	} else if len(m) == 3 && strings.Index(m, "B") == 0 {
+		return PlayerMove{File: File(m[1]), Rank: Rank(m[2])}, true
+	} else if len(m) == 3 && strings.Index(m, "R") == 0 {
+		return PlayerMove{File: File(m[1]), Rank: Rank(m[2])}, true
+	} else if m == "O-O" {
+		return PlayerMove{CastleKingside: true}, true
+	}
+	return PlayerMove{}, false
 }
 
 func parseComments(val string) []Comment {
