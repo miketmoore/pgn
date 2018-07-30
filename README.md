@@ -1,5 +1,7 @@
 # Portable Game Notation (PGN) Parser
 
+[![Go Report Card](https://goreportcard.com/badge/github.com/miketmoore/pgn)](https://goreportcard.com/report/github.com/miketmoore/pgn)
+
 This is a PGN parser implemented in [the Go programming language](https://golang.org/).
 
 ## Usage
