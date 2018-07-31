@@ -3,7 +3,9 @@ package pgn
 import (
 	"bufio"
 	"fmt"
+	"reflect"
 	"regexp"
+	"strconv"
 	"strings"
 )
 
@@ -162,7 +164,27 @@ const (
 	SectionMovetext Section = "movetext"
 )
 
-func Unmarshal(raw string, data *PGN) *PGN {
+// An UnmarshalError describes a PGN value that led to an unexported
+// (and therefore unwritable) struct field.
+type UnmarshalError struct {
+	Value string
+	Type  reflect.Type
+	Field reflect.StructField
+}
+
+func (e UnmarshalError) Error() string {
+	return "pgn: cannot unmarshal value " + strconv.Quote(e.Value) + " into unexported field " + e.Field.Name + " of type " + e.Type.String()
+}
+
+// tagpairs
+// empty line
+// movetext
+func Unmarshal(raw string, data *PGN) error {
+	if strings.TrimSpace(raw) == "" {
+		return UnmarshalError{
+			Value: "",
+		}
+	}
 	r := strings.NewReader(raw)
 	scanner := bufio.NewScanner(r)
 	section := SectionTagPair
@@ -199,7 +221,7 @@ func Unmarshal(raw string, data *PGN) *PGN {
 
 	}
 	data.Movetext = unmarshalMovetext(movetextLines)
-	return data
+	return nil
 }
 
 func unmarshalSevenTagRoster(line string) (string, string, bool) {

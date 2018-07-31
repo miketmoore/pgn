@@ -207,7 +207,10 @@ var unmarshalled = PGN{
 func TestUnmarshal(t *testing.T) {
 	// Unmarshal PGN string into PGN struct
 	var got PGN
-	Unmarshal(raw, &got)
+	err := Unmarshal(raw, &got)
+	if err != nil {
+		t.Fatal("err is not nil")
+	}
 	if got.TagPairs != unmarshalled.TagPairs {
 		fmt.Printf("Got:\n%v\n", got)
 		fmt.Printf("Expected:\n%v\n", unmarshalled)
@@ -234,6 +237,33 @@ func TestOuptut(t *testing.T) {
 		fmt.Printf("Expected:\n%s\n", raw)
 		t.Fatal("output failed")
 	}
+}
+
+func TestUnmarshalError(t *testing.T) {
+	tests := []struct {
+		in       string
+		expected UnmarshalError
+	}{
+		{
+			in:       "",
+			expected: UnmarshalError{Value: ""},
+		},
+		// {
+		// 	in:       "[Event",
+		// 	expected: UnmarshalError{Value: "[Event"},
+		// },
+	}
+	for _, test := range tests {
+		var got PGN
+		err := Unmarshal(test.in, &got)
+		if err == nil {
+			t.Fatal("no error, which is unexpected - input:", test.in)
+		}
+		if err.(UnmarshalError).Value != test.expected.Value {
+			t.Fatal("error is unexpected")
+		}
+	}
+
 }
 
 func assertMovetextEquality(a, b Movetext) bool {
