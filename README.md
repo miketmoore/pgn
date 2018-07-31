@@ -2,7 +2,7 @@
 
 [![Go Report Card](https://goreportcard.com/badge/github.com/miketmoore/pgn)](https://goreportcard.com/report/github.com/miketmoore/pgn)
 
-This is a PGN parser implemented in [the Go programming language](https://golang.org/).
+This is a PGN unmarshalr implemented in [the Go programming language](https://golang.org/).
 
 ## Usage
 
@@ -26,7 +26,7 @@ hxg5 29. b3 Ke6 30. a3 Kd6 31. axb4 cxb4 32. Ra5 Nd5 33. f3 Bc8 34. Kf2 Bf5
 35. Ra7 g6 36. Ra6+ Kc5 37. Ke1 Nf4 38. g3 Nxh3 39. Kd2 Kb5 40. Rd6 Kc5 41. Ra6
 Nf2 42. g4 Bd3 43. Re6 1/2-1/2`
 
-parsed := pgn.Unmarshal(game)
+unmarshalled := pgn.Unmarshal(game)
 
 // do something with the PGN struct instance...
 ```
@@ -34,7 +34,7 @@ parsed := pgn.Unmarshal(game)
 ### Build PGN Output
 
 ```
-parsed := pgn.PGN{
+unmarshalled := pgn.PGN{
     TagPairs: pgn.TagPairs{
         Event: "Belgrade, Serbia JUG",
         Date: "1992.11.04",
@@ -47,7 +47,7 @@ parsed := pgn.PGN{
         pgn.MovetextEntry{White:"e4",Black:"e5"},
     }
 }
-output := parsed.String()
+output := unmarshalled.String()
 fmt.Println(output)
 ```
 

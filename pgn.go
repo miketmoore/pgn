@@ -172,7 +172,7 @@ func Unmarshal(raw string) PGN {
 		line := scanner.Text()
 
 		if section == SectionTagPair {
-			key, val, ok := parseSevenTagRoster(line)
+			key, val, ok := unmarshalSevenTagRoster(line)
 			if ok {
 				switch key {
 				case "Event":
@@ -199,11 +199,11 @@ func Unmarshal(raw string) PGN {
 		}
 
 	}
-	pgn.Movetext = parseMovetext(movetextLines)
+	pgn.Movetext = unmarshalMovetext(movetextLines)
 	return pgn
 }
 
-func parseSevenTagRoster(line string) (string, string, bool) {
+func unmarshalSevenTagRoster(line string) (string, string, bool) {
 	var re = regexp.MustCompile(`\[(.*) "(.*)"\]`)
 	matches := re.FindStringSubmatch(line)
 	if len(matches) == 3 {
@@ -212,7 +212,7 @@ func parseSevenTagRoster(line string) (string, string, bool) {
 	return "", "", false
 }
 
-func parseMovetext(lines []string) Movetext {
+func unmarshalMovetext(lines []string) Movetext {
 	mt := Movetext{}
 	str := strings.Join(lines, " ")
 
@@ -221,14 +221,14 @@ func parseMovetext(lines []string) Movetext {
 
 	for _, movetextSection := range split {
 		if strings.TrimSpace(movetextSection) != "" {
-			comments := parseComments(movetextSection)
+			comments := unmarshalComments(movetextSection)
 			moves := strings.Split(strings.TrimSpace(movetextSection), " ")
 			for i := 0; i < len(moves); i++ {
 				moves[i] = strings.TrimSpace(moves[i])
 			}
 			mt = append(mt, MovetextEntry{
-				White:    parseMove(moves[0]),
-				Black:    parseMove(moves[1]),
+				White:    unmarshalMove(moves[0]),
+				Black:    unmarshalMove(moves[1]),
 				Comments: comments,
 			})
 		}
@@ -241,7 +241,7 @@ func parseMovetext(lines []string) Movetext {
 var nonPawnMove = regexp.MustCompile(`^([PNBRQK])([a-h])([1-8])$`)
 var disambiguateByFileRe = regexp.MustCompile(`^([PNBRQK])([a-h])([a-h])([1-8])$`)
 
-func parseMove(move string) Move {
+func unmarshalMove(move string) Move {
 	m := Move{Original: move}
 	if move == "O-O" {
 		m.Piece = PieceKing
@@ -301,7 +301,7 @@ func parseMove(move string) Move {
 	return m
 }
 
-func parseComments(val string) []Comment {
+func unmarshalComments(val string) []Comment {
 	commentsRe := regexp.MustCompile(`\{(.*)\}`)
 	matches := commentsRe.FindAllStringSubmatch(val, -1)
 	comments := []Comment{}
