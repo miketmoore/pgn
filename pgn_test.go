@@ -66,16 +66,16 @@ var parsed = PGN{
 			Black: Move{Original: "Nb8", File: FileB, Rank: Rank8, Piece: PieceKnight},
 		},
 		MovetextEntry{
-			White: Move{Original: "d4", Piece: PiecePawn},
-			Black: Move{Original: "Nbd7", Piece: PieceKnight, Disambiguate: Disambiguate{File: true}},
+			White: Move{Original: "d4", File: FileD, Rank: Rank4, Piece: PiecePawn},
+			Black: Move{Original: "Nbd7", File: FileD, Rank: Rank7, Piece: PieceKnight, Disambiguate: Disambiguate{File: FileB}},
 		},
 		MovetextEntry{
 			White: Move{Original: "c4", File: FileC, Rank: Rank4, Piece: PiecePawn},
 			Black: Move{Original: "c6", File: FileC, Rank: Rank6, Piece: PiecePawn},
 		},
 		MovetextEntry{
-			White: Move{Original: "cxb5", File: FileB, Rank: Rank5, Piece: PiecePawn, Capture: true},
-			Black: Move{Original: "axb5", File: FileB, Rank: Rank5, Piece: PiecePawn, Capture: true},
+			White: Move{Original: "cxb5", File: FileB, Rank: Rank5, Piece: PiecePawn, Capture: true, Disambiguate: Disambiguate{File: FileC}},
+			Black: Move{Original: "axb5", File: FileB, Rank: Rank5, Piece: PiecePawn, Capture: true, Disambiguate: Disambiguate{File: FileA}},
 		},
 		MovetextEntry{
 			White: Move{Original: "Nc3", File: FileC, Rank: Rank3, Piece: PieceKnight},
@@ -94,19 +94,19 @@ var parsed = PGN{
 			Black: Move{Original: "c5", File: FileC, Rank: Rank5, Piece: PiecePawn},
 		},
 		MovetextEntry{
-			White: Move{Original: "dxe5", File: FileE, Rank: Rank5, Piece: PiecePawn, Capture: true},
-			Black: Move{Original: "Nxe4", Piece: PieceKnight, Capture: true},
+			White: Move{Original: "dxe5", File: FileE, Rank: Rank5, Piece: PiecePawn, Capture: true, Disambiguate: Disambiguate{File: FileD}},
+			Black: Move{Original: "Nxe4", File: FileE, Rank: Rank4, Piece: PieceKnight, Capture: true},
 		},
 		MovetextEntry{
 			White: Move{Original: "Bxe7", File: FileE, Rank: Rank7, Piece: PieceBishop, Capture: true},
 			Black: Move{Original: "Qxe7", File: FileE, Rank: Rank7, Piece: PieceQueen, Capture: true},
 		},
 		MovetextEntry{
-			White: Move{Original: "exd6", File: FileD, Rank: Rank6, Piece: PiecePawn, Capture: true},
-			Black: Move{Original: "Qf6", File: FileF, Rank: Rank6, Piece: PieceQueen, Capture: true},
+			White: Move{Original: "exd6", File: FileD, Rank: Rank6, Piece: PiecePawn, Capture: true, Disambiguate: Disambiguate{File: FileE}},
+			Black: Move{Original: "Qf6", File: FileF, Rank: Rank6, Piece: PieceQueen},
 		},
 		MovetextEntry{
-			White: Move{Original: "Nbd2", File: FileD, Rank: Rank2, Piece: PieceKnight, Disambiguate: Disambiguate{File: true}},
+			White: Move{Original: "Nbd2", File: FileD, Rank: Rank2, Piece: PieceKnight, Disambiguate: Disambiguate{File: FileB}},
 			Black: Move{Original: "Nxd6", File: FileD, Rank: Rank6, Piece: PieceKnight, Capture: true},
 		},
 		MovetextEntry{
@@ -119,7 +119,7 @@ var parsed = PGN{
 		},
 		MovetextEntry{
 			White: Move{Original: "Ne5", File: FileE, Rank: Rank5, Piece: PieceKnight},
-			Black: Move{Original: "Rae8", File: FileE, Rank: Rank8, Piece: PieceRook, Disambiguate: Disambiguate{File: true}},
+			Black: Move{Original: "Rae8", File: FileE, Rank: Rank8, Piece: PieceRook, Disambiguate: Disambiguate{File: FileA}},
 		},
 		MovetextEntry{
 			White: Move{Original: "Bxf7+", File: FileF, Rank: Rank7, Piece: PieceBishop, Capture: true, Check: true},
@@ -240,10 +240,20 @@ func assertMovetextEquality(a, b Movetext) bool {
 		return false
 	}
 	for i, valA := range a {
-		if valA.White.Original != b[i].White.Original || valA.Black.Original != b[i].Black.Original {
+		if valA.White != b[i].White {
+			fmt.Println("White unexpected")
+			fmt.Println(valA.White)
+			fmt.Println(b[i].White)
+			return false
+		}
+		if valA.Black != b[i].Black {
+			fmt.Println("Black unexpected")
+			fmt.Println(valA.Black)
+			fmt.Println(b[i].Black)
 			return false
 		}
 		if len(valA.Comments) != len(b[i].Comments) {
+			fmt.Println("Comments unexpected")
 			return false
 		}
 	}

@@ -138,8 +138,12 @@ const (
 	PieceKing   Piece = "K"
 )
 
+// Disambiguate is used to notate that the PGN movetext is ambiguous
+// Note that the above disambiguation is needed only to distinguish among moves of
+// the same piece type to the same square;
 type Disambiguate struct {
-	File, Rank bool
+	File File
+	Rank Rank
 }
 
 type Move struct {
@@ -224,8 +228,8 @@ func parseMovetext(lines []string) Movetext {
 				moves[i] = strings.TrimSpace(moves[i])
 			}
 			mt = append(mt, MovetextEntry{
-				White:    Move{Original: moves[0]},
-				Black:    Move{Original: moves[1]},
+				White:    parseMove(moves[0]),
+				Black:    parseMove(moves[1]),
 				Comments: comments,
 			})
 		}
@@ -233,6 +237,68 @@ func parseMovetext(lines []string) Movetext {
 	}
 
 	return mt
+}
+
+var nonPawnMove = regexp.MustCompile(`^([PNBRQK])([a-h])([1-8])$`)
+var disambiguateByFileRe = regexp.MustCompile(`^([PNBRQK])([a-h])([a-h])([1-8])$`)
+
+func parseMove(move string) Move {
+	m := Move{Original: move}
+	if move == "O-O" {
+		m.Piece = PieceKing
+	} else if move == "O-O-O" {
+		m.Piece = PieceKing
+	} else if len(move) == 2 {
+		m.Piece = PiecePawn
+		m.File = File(move[0])
+		m.Rank = Rank(move[1])
+	} else if len(move) == 3 {
+		matches := nonPawnMove.FindStringSubmatch(move)
+		if len(matches[1:]) == 3 {
+			m.Piece = Piece(move[0])
+			m.File = File(move[1])
+			m.Rank = Rank(move[2])
+		}
+	} else if len(move) == 4 {
+		fmt.Println(">> case 5")
+
+		byFileMatches := disambiguateByFileRe.FindStringSubmatch(move)
+		if strings.Index(move, "+") == 3 {
+			fmt.Println(">> case 5.1")
+			m.Piece = Piece(move[0])
+			m.File = File(move[1])
+			m.Rank = Rank(move[2])
+			m.Check = true
+		} else if strings.Index(move, "x") == 1 {
+			if regexp.MustCompile(`^[a-h]{1}`).MatchString(move) {
+				// pawn capture
+				// axb5
+				m.Piece = PiecePawn
+				m.Disambiguate = Disambiguate{
+					File: File(move[0]),
+				}
+				m.File = File(move[2])
+				m.Rank = Rank(move[3])
+			} else {
+				// Nxa4
+				m.Piece = Piece(move[0])
+				m.File = File(move[2])
+				m.Rank = Rank(move[3])
+			}
+			m.Capture = true
+		} else if len(byFileMatches) > 0 && len(byFileMatches[1:]) == 4 {
+			fmt.Println(">> case 7")
+			m.Piece = Piece(move[0])
+			m.Disambiguate = Disambiguate{
+				File: File(move[1]),
+			}
+			m.File = File(move[2])
+			m.Rank = Rank(move[3])
+		}
+	} else if len(move) == 5 {
+		panic(move)
+	}
+	return m
 }
 
 func parseComments(val string) []Comment {
