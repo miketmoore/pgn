@@ -67,7 +67,7 @@ var parsed = PGN{
 		},
 		MovetextEntry{
 			White: Move{Original: "d4", Piece: PiecePawn},
-			Black: Move{Original: "Nbd7", Piece: PieceKnight},
+			Black: Move{Original: "Nbd7", Piece: PieceKnight, Disambiguate: Disambiguate{File: true}},
 		},
 		MovetextEntry{
 			White: Move{Original: "c4", File: FileC, Rank: Rank4, Piece: PiecePawn},
@@ -106,7 +106,7 @@ var parsed = PGN{
 			Black: Move{Original: "Qf6", File: FileF, Rank: Rank6, Piece: PieceQueen, Capture: true},
 		},
 		MovetextEntry{
-			White: Move{Original: "Nbd2", File: FileD, Rank: Rank2, Piece: PieceKnight},
+			White: Move{Original: "Nbd2", File: FileD, Rank: Rank2, Piece: PieceKnight, Disambiguate: Disambiguate{File: true}},
 			Black: Move{Original: "Nxd6", File: FileD, Rank: Rank6, Piece: PieceKnight, Capture: true},
 		},
 		MovetextEntry{
@@ -119,7 +119,7 @@ var parsed = PGN{
 		},
 		MovetextEntry{
 			White: Move{Original: "Ne5", File: FileE, Rank: Rank5, Piece: PieceKnight},
-			Black: Move{Original: "Rae8", File: FileE, Rank: Rank8, Piece: PieceRook},
+			Black: Move{Original: "Rae8", File: FileE, Rank: Rank8, Piece: PieceRook, Disambiguate: Disambiguate{File: true}},
 		},
 		MovetextEntry{
 			White: Move{Original: "Bxf7+", File: FileF, Rank: Rank7, Piece: PieceBishop, Capture: true, Check: true},

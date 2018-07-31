@@ -138,13 +138,18 @@ const (
 	PieceKing   Piece = "K"
 )
 
+type Disambiguate struct {
+	File, Rank bool
+}
+
 type Move struct {
-	Original string
-	File     File
-	Rank     Rank
-	Piece    Piece
-	Capture  bool
-	Check    bool
+	Original     string
+	File         File
+	Rank         Rank
+	Piece        Piece
+	Capture      bool
+	Check        bool
+	Disambiguate Disambiguate
 }
 
 type Section string
