@@ -17,6 +17,10 @@ func Unmarshal(raw string, data *PGN) error {
 	scanner := bufio.NewScanner(r)
 	section := SectionTagPair
 	movetextLines := []string{}
+	data.Games = []Game{}
+
+	// TODO improve to parse more than one game
+	game := Game{}
 	for scanner.Scan() {
 		line := scanner.Text()
 
@@ -25,19 +29,19 @@ func Unmarshal(raw string, data *PGN) error {
 			if ok {
 				switch key {
 				case "Event":
-					data.TagPairs.Event = val
+					game.TagPairs.Event = val
 				case "Site":
-					data.TagPairs.Site = val
+					game.TagPairs.Site = val
 				case "Date":
-					data.TagPairs.Date = val
+					game.TagPairs.Date = val
 				case "Round":
-					data.TagPairs.Round = val
+					game.TagPairs.Round = val
 				case "White":
-					data.TagPairs.White = val
+					game.TagPairs.White = val
 				case "Black":
-					data.TagPairs.Black = val
+					game.TagPairs.Black = val
 				case "Result":
-					data.TagPairs.Result = val
+					game.TagPairs.Result = val
 				}
 			}
 			if strings.TrimSpace(line) == "" {
@@ -48,7 +52,9 @@ func Unmarshal(raw string, data *PGN) error {
 		}
 
 	}
-	data.Movetext = unmarshalMovetext(movetextLines)
+	game.Movetext = unmarshalMovetext(movetextLines)
+	data.Games = append(data.Games, game)
+
 	return nil
 }
 

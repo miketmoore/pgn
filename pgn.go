@@ -7,6 +7,10 @@ import (
 // PGN represents an unmarshalled PGN format string
 // It represents zero or more games
 type PGN struct {
+	Games []Game
+}
+
+type Game struct {
 	TagPairs TagPairs
 	Movetext Movetext
 }
@@ -14,23 +18,25 @@ type PGN struct {
 // String returns a PGN formatted string
 func (p *PGN) String() string {
 	str := ""
-	str += fmt.Sprintf("[Event \"%s\"]\n", p.TagPairs.Event)
-	str += fmt.Sprintf("[Site \"%s\"]\n", p.TagPairs.Site)
-	str += fmt.Sprintf("[Date \"%s\"]\n", p.TagPairs.Date)
-	str += fmt.Sprintf("[Round \"%s\"]\n", p.TagPairs.Round)
-	str += fmt.Sprintf("[White \"%s\"]\n", p.TagPairs.White)
-	str += fmt.Sprintf("[Black \"%s\"]\n", p.TagPairs.Black)
-	str += fmt.Sprintf("[Result \"%s\"]\n", p.TagPairs.Result)
-	str += "\n"
-	for i, entry := range p.Movetext {
-		str += fmt.Sprintf("%d. %s %s", i+1, entry.White.Original, entry.Black.Original)
-		if len(entry.Comments) > 0 {
-			for _, comment := range entry.Comments {
-				str += fmt.Sprintf(" {%s}", comment)
+	for _, game := range p.Games {
+		str += fmt.Sprintf("[Event \"%s\"]\n", game.TagPairs.Event)
+		str += fmt.Sprintf("[Site \"%s\"]\n", game.TagPairs.Site)
+		str += fmt.Sprintf("[Date \"%s\"]\n", game.TagPairs.Date)
+		str += fmt.Sprintf("[Round \"%s\"]\n", game.TagPairs.Round)
+		str += fmt.Sprintf("[White \"%s\"]\n", game.TagPairs.White)
+		str += fmt.Sprintf("[Black \"%s\"]\n", game.TagPairs.Black)
+		str += fmt.Sprintf("[Result \"%s\"]\n", game.TagPairs.Result)
+		str += "\n"
+		for i, entry := range game.Movetext {
+			str += fmt.Sprintf("%d. %s %s", i+1, entry.White.Original, entry.Black.Original)
+			if len(entry.Comments) > 0 {
+				for _, comment := range entry.Comments {
+					str += fmt.Sprintf(" {%s}", comment)
+				}
 			}
-		}
-		if i < len(p.Movetext)-1 {
-			str += " "
+			if i < len(game.Movetext)-1 {
+				str += " "
+			}
 		}
 	}
 	return str
