@@ -47,7 +47,6 @@ func buildMoveString(file, rank string, capture bool, piece string, check bool) 
 }
 
 func getPieceInitialByFullname(fullname string) string {
-	fmt.Println("getPieceInitialByFullname", fullname)
 	switch fullname {
 	case "pawn":
 		return "P"
@@ -260,19 +259,14 @@ func parseMove(move string) Move {
 			m.Rank = Rank(move[2])
 		}
 	} else if len(move) == 4 {
-		fmt.Println(">> case 5")
-
 		byFileMatches := disambiguateByFileRe.FindStringSubmatch(move)
 		if strings.Index(move, "+") == 3 {
-			fmt.Println(">> case 5.1")
 			m.Piece = Piece(move[0])
 			m.File = File(move[1])
 			m.Rank = Rank(move[2])
 			m.Check = true
 		} else if strings.Index(move, "x") == 1 {
 			if regexp.MustCompile(`^[a-h]{1}`).MatchString(move) {
-				// pawn capture
-				// axb5
 				m.Piece = PiecePawn
 				m.Disambiguate = Disambiguate{
 					File: File(move[0]),
@@ -280,14 +274,12 @@ func parseMove(move string) Move {
 				m.File = File(move[2])
 				m.Rank = Rank(move[3])
 			} else {
-				// Nxa4
 				m.Piece = Piece(move[0])
 				m.File = File(move[2])
 				m.Rank = Rank(move[3])
 			}
 			m.Capture = true
 		} else if len(byFileMatches) > 0 && len(byFileMatches[1:]) == 4 {
-			fmt.Println(">> case 7")
 			m.Piece = Piece(move[0])
 			m.Disambiguate = Disambiguate{
 				File: File(move[1]),
@@ -296,7 +288,15 @@ func parseMove(move string) Move {
 			m.Rank = Rank(move[3])
 		}
 	} else if len(move) == 5 {
-		panic(move)
+		if regexp.MustCompile(`^[BNRQK]x[a-h][1-8]\+`).MatchString(move) {
+			m.Piece = Piece(move[0])
+			m.Capture = true
+			m.File = File(move[2])
+			m.Rank = Rank(move[3])
+			m.Check = true
+		} else {
+			panic(move)
+		}
 	}
 	return m
 }
