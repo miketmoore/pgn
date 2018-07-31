@@ -37,8 +37,9 @@ var parsed = PGN{
 			Black: Move{Original: "Nc6", Piece: PieceKnight, File: FileC, Rank: Rank6},
 		},
 		MovetextEntry{
-			White: Move{Original: "Bb5", Piece: PieceBishop, File: FileB, Rank: Rank5},
-			Black: Move{Original: "a6", Piece: PiecePawn, File: FileA, Rank: Rank6, Comments: []Comment{"This opening is called the Ruy Lopez."}},
+			White:    Move{Original: "Bb5", Piece: PieceBishop, File: FileB, Rank: Rank5},
+			Black:    Move{Original: "a6", Piece: PiecePawn, File: FileA, Rank: Rank6},
+			Comments: []Comment{"This opening is called the Ruy Lopez."},
 		},
 		MovetextEntry{
 			White: Move{Original: "Ba4", File: FileA, Rank: Rank4, Piece: PieceBishop},
@@ -206,13 +207,13 @@ var parsed = PGN{
 func TestParse(t *testing.T) {
 	got := Parse(raw)
 	if got.TagPairs != parsed.TagPairs {
-		fmt.Printf("Got:\n%s\n", got)
-		fmt.Printf("Expected:\n%s\n", parsed)
+		fmt.Printf("Got:\n%v\n", got)
+		fmt.Printf("Expected:\n%v\n", parsed)
 		t.Fatal("Parsing PGN string failed")
 	}
 	if !assertMovetextEquality(parsed.Movetext, got.Movetext) {
-		fmt.Printf("Got:\n%s\n", got)
-		fmt.Printf("Expected:\n%s\n", parsed)
+		fmt.Printf("Got:\n%v\n", got)
+		fmt.Printf("Expected:\n%v\n", parsed)
 		t.Fatal("Movetext is unexpected during PGN parsing")
 	}
 }
@@ -231,7 +232,7 @@ func assertMovetextEquality(a, b Movetext) bool {
 		return false
 	}
 	for i, valA := range a {
-		if valA.White != b[i].White || valA.Black != b[i].Black {
+		if valA.White.Original != b[i].White.Original || valA.Black.Original != b[i].Black.Original {
 			return false
 		}
 		if len(valA.Comments) != len(b[i].Comments) {

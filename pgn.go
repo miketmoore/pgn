@@ -12,17 +12,17 @@ type PGN struct {
 	Movetext Movetext
 }
 
-func (p *PGN) RecordWhiteMove(file, rank string, capture bool, piece string, check bool) {
-	s := buildMoveString(file, rank, capture, piece, check)
-	p.Movetext = append(p.Movetext, MovetextEntry{White: s})
-}
+// func (p *PGN) RecordWhiteMove(file, rank string, capture bool, piece string, check bool) {
+// 	s := buildMoveString(file, rank, capture, piece, check)
+// 	p.Movetext = append(p.Movetext, MovetextEntry{White: s})
+// }
 
-func (p *PGN) RecordBlackMove(file, rank string, capture bool, piece string, check bool) {
-	s := buildMoveString(file, rank, capture, piece, check)
-	move := p.Movetext[len(p.Movetext)-1]
-	move.Black = s
-	p.Movetext[len(p.Movetext)-1] = move
-}
+// func (p *PGN) RecordBlackMove(file, rank string, capture bool, piece string, check bool) {
+// 	s := buildMoveString(file, rank, capture, piece, check)
+// 	move := p.Movetext[len(p.Movetext)-1]
+// 	move.Black = s
+// 	p.Movetext[len(p.Movetext)-1] = move
+// }
 
 func buildMoveString(file, rank string, capture bool, piece string, check bool) string {
 	var s string
@@ -76,7 +76,7 @@ func (p *PGN) String() string {
 	str += fmt.Sprintf("[Result \"%s\"]\n", p.TagPairs.Result)
 	str += "\n"
 	for i, entry := range p.Movetext {
-		str += fmt.Sprintf("%d. %s %s", i+1, entry.White, entry.Black)
+		str += fmt.Sprintf("%d. %s %s", i+1, entry.White.Original, entry.Black.Original)
 		if len(entry.Comments) > 0 {
 			for _, comment := range entry.Comments {
 				str += fmt.Sprintf(" {%s}", comment)
@@ -130,13 +130,21 @@ const (
 type Piece string
 
 const (
-	PieceKnight Piece = "K"
+	PiecePawn   Piece = "P"
+	PieceBishop Piece = "B"
+	PieceRook   Piece = "R"
+	PieceKnight Piece = "N"
+	PieceQueen  Piece = "Q"
+	PieceKing   Piece = "K"
 )
 
 type Move struct {
 	Original string
 	File     File
 	Rank     Rank
+	Piece    Piece
+	Capture  bool
+	Check    bool
 }
 
 type Section string
@@ -211,8 +219,8 @@ func parseMovetext(lines []string) Movetext {
 				moves[i] = strings.TrimSpace(moves[i])
 			}
 			mt = append(mt, MovetextEntry{
-				White:    moves[0],
-				Black:    moves[1],
+				White:    Move{Original: moves[0]},
+				Black:    Move{Original: moves[1]},
 				Comments: comments,
 			})
 		}
