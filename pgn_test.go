@@ -206,7 +206,7 @@ var parsed = PGN{
 
 func TestParse(t *testing.T) {
 	// Unmarshal PGN string into PGN struct
-	got := Parse(raw)
+	got := Unmarshal(raw)
 	if got.TagPairs != parsed.TagPairs {
 		fmt.Printf("Got:\n%v\n", got)
 		fmt.Printf("Expected:\n%v\n", parsed)

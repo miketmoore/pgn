@@ -162,7 +162,7 @@ const (
 	SectionMovetext Section = "movetext"
 )
 
-func Parse(raw string) PGN {
+func Unmarshal(raw string) PGN {
 	r := strings.NewReader(raw)
 	scanner := bufio.NewScanner(r)
 	pgn := PGN{}
