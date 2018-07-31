@@ -206,7 +206,8 @@ var unmarshalled = PGN{
 
 func TestUnmarshal(t *testing.T) {
 	// Unmarshal PGN string into PGN struct
-	got := Unmarshal(raw)
+	var got PGN
+	Unmarshal(raw, &got)
 	if got.TagPairs != unmarshalled.TagPairs {
 		fmt.Printf("Got:\n%v\n", got)
 		fmt.Printf("Expected:\n%v\n", unmarshalled)

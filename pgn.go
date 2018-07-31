@@ -162,10 +162,9 @@ const (
 	SectionMovetext Section = "movetext"
 )
 
-func Unmarshal(raw string) PGN {
+func Unmarshal(raw string, data *PGN) *PGN {
 	r := strings.NewReader(raw)
 	scanner := bufio.NewScanner(r)
-	pgn := PGN{}
 	section := SectionTagPair
 	movetextLines := []string{}
 	for scanner.Scan() {
@@ -176,19 +175,19 @@ func Unmarshal(raw string) PGN {
 			if ok {
 				switch key {
 				case "Event":
-					pgn.TagPairs.Event = val
+					data.TagPairs.Event = val
 				case "Site":
-					pgn.TagPairs.Site = val
+					data.TagPairs.Site = val
 				case "Date":
-					pgn.TagPairs.Date = val
+					data.TagPairs.Date = val
 				case "Round":
-					pgn.TagPairs.Round = val
+					data.TagPairs.Round = val
 				case "White":
-					pgn.TagPairs.White = val
+					data.TagPairs.White = val
 				case "Black":
-					pgn.TagPairs.Black = val
+					data.TagPairs.Black = val
 				case "Result":
-					pgn.TagPairs.Result = val
+					data.TagPairs.Result = val
 				}
 			}
 			if strings.TrimSpace(line) == "" {
@@ -199,8 +198,8 @@ func Unmarshal(raw string) PGN {
 		}
 
 	}
-	pgn.Movetext = unmarshalMovetext(movetextLines)
-	return pgn
+	data.Movetext = unmarshalMovetext(movetextLines)
+	return data
 }
 
 func unmarshalSevenTagRoster(line string) (string, string, bool) {
