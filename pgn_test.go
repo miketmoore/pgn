@@ -205,6 +205,7 @@ var parsed = PGN{
 }
 
 func TestParse(t *testing.T) {
+	// Unmarshal PGN string into PGN struct
 	got := Parse(raw)
 	if got.TagPairs != parsed.TagPairs {
 		fmt.Printf("Got:\n%v\n", got)
@@ -215,6 +216,13 @@ func TestParse(t *testing.T) {
 		fmt.Printf("Got:\n%v\n", got)
 		fmt.Printf("Expected:\n%v\n", parsed)
 		t.Fatal("Movetext is unexpected during PGN parsing")
+	}
+	// Convert PGN struct back to PGN string
+	output := got.String()
+	if output != raw {
+		fmt.Printf("Got:\n%s\n", output)
+		fmt.Printf("Expected:\n%s\n", raw)
+		t.Fatal("output failed")
 	}
 }
 
