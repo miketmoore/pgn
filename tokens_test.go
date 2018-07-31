@@ -1,11 +1,12 @@
 package pgn_test
 
 import (
-	"fmt"
 	"regexp"
 	"testing"
 
 	"github.com/miketmoore/pgn"
+	"github.com/timtadh/lexmachine"
+	"github.com/timtadh/lexmachine/machines"
 )
 
 var tests = []struct {
@@ -82,16 +83,21 @@ var tests = []struct {
 }
 
 func TestTokens(t *testing.T) {
-	for i, test := range tests {
-		t.Run(string(i), func(t *testing.T) {
-			match := test.re.MatchString(test.in)
-			if match != test.match {
-				fmt.Printf("Regexp: %v\n", test.re)
-				fmt.Printf("Input: %s\n", test.in)
-				fmt.Println("Expected match: ", test.match)
-				fmt.Println("Got match: ", match)
-				t.Fatal("Token regexp failed")
-			}
-		})
-	}
+	lexer := lexmachine.NewLexer()
+
+	lexer.Add([]byte{byte('E'), byte('v'), byte('e'), byte('n'), byte('t')}, func(s *lexmachine.Scanner, m *machines.Match) (interface{}, error) {
+		return 0, nil
+	})
+	// for i, test := range tests {
+	// 	t.Run(string(i), func(t *testing.T) {
+	// 		match := test.re.MatchString(test.in)
+	// 		if match != test.match {
+	// 			fmt.Printf("Regexp: %v\n", test.re)
+	// 			fmt.Printf("Input: %s\n", test.in)
+	// 			fmt.Println("Expected match: ", test.match)
+	// 			fmt.Println("Got match: ", match)
+	// 			t.Fatal("Token regexp failed")
+	// 		}
+	// 	})
+	// }
 }
