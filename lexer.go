@@ -83,8 +83,25 @@ func (l *Lexer) Tokenize() (bool, []Token) {
 // tnc = letter | digit | und
 func (l *Lexer) readTagName() (bool, string) {
 	s := ""
-	// TODO read runes and build string of tag name characters
-	return false, s
+	ok := true
+	i := 0
+	for ok {
+		peekOk, peekVal := l.scanner.Peek()
+		if !peekOk {
+			return false, s
+		}
+		if isLetter(peekVal) || isDigit(peekVal) || isUnderscore(peekVal) {
+			nextOk, nextVal := l.scanner.Next()
+			if !nextOk {
+				return false, s
+			}
+			s = s + string(nextVal)
+		} else {
+			ok = false
+		}
+		i++
+	}
+	return true, s
 }
 
 func isLBracket(r rune) bool    { return r == rune('[') }
