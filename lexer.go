@@ -2,7 +2,6 @@ package pgn
 
 import (
 	"errors"
-	"fmt"
 )
 
 type Lexer struct {
@@ -67,6 +66,8 @@ tpair = lb , tname , string , rb ;
 func (l *Lexer) Tokenize() (error, []Token) {
 	tokens := []Token{}
 
+	l.readWhitespace()
+
 	r := l.scanner.Peek()
 
 	if r == NUL {
@@ -79,6 +80,8 @@ func (l *Lexer) Tokenize() (error, []Token) {
 			Value: "[",
 			Type:  TagPairOpen,
 		})
+
+		l.readWhitespace()
 
 		value := l.readTagName()
 		tokens = append(tokens, Token{
@@ -96,6 +99,8 @@ func (l *Lexer) Tokenize() (error, []Token) {
 			Value: value,
 			Type:  String,
 		})
+
+		l.readWhitespace()
 
 		r = l.scanner.Peek()
 		if r != ']' {
@@ -128,16 +133,16 @@ func (l *Lexer) readTagName() string {
 	return s
 }
 
-func (l *Lexer) readWhitespace() bool {
+func (l *Lexer) readWhitespace() {
 	ok := true
 	for ok {
 		peekVal := l.scanner.Peek()
 		if !isWhiteSpace(peekVal) {
-			return true
+			return
 		}
 		l.scanner.Next()
 	}
-	return true
+	return
 }
 
 func (l *Lexer) readString() (error, string) {
@@ -165,7 +170,6 @@ func (l *Lexer) readString() (error, string) {
 			ok = false
 		}
 	}
-	fmt.Println("result", s)
 	return nil, s
 }
 

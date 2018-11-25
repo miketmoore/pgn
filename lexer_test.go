@@ -14,8 +14,18 @@ func TestIsTagPair(t *testing.T) {
 		out  []pgn.Token
 	}{
 		{
-			name: "Letters",
+			name: "Tag Pair",
 			in:   "[Event \"F/S Return Match\"]",
+			out: []pgn.Token{
+				pgn.NewToken(pgn.TagPairOpen, "["),
+				pgn.NewToken(pgn.TagName, "Event"),
+				pgn.NewToken(pgn.String, "F/S Return Match"),
+				pgn.NewToken(pgn.TagPairClose, "]"),
+			},
+		},
+		{
+			name: "Tag Pair - Lots of Whitespace",
+			in:   "  [   Event \"F/S      Return      Match\"    ]    ",
 			out: []pgn.Token{
 				pgn.NewToken(pgn.TagPairOpen, "["),
 				pgn.NewToken(pgn.TagName, "Event"),
@@ -33,6 +43,8 @@ func TestIsTagPair(t *testing.T) {
 			err, tokens := lexer.Tokenize()
 
 			if err != nil {
+				fmt.Println("Error: ", err)
+				fmt.Println("Tokens: ", tokens)
 				t.Fatal("Unexpected error returned")
 			}
 			if len(tokens) != len(test.out) {
