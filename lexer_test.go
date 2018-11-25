@@ -19,7 +19,7 @@ func TestIsTagPair(t *testing.T) {
 			out: []pgn.Token{
 				pgn.NewToken(pgn.TagPairOpen, "["),
 				pgn.NewToken(pgn.TagName, "Event"),
-				pgn.NewToken(pgn.TagValue, "F/S Return Match"),
+				pgn.NewToken(pgn.String, "F/S Return Match"),
 				pgn.NewToken(pgn.TagPairClose, "]"),
 			},
 		},

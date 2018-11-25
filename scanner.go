@@ -23,21 +23,21 @@ func NewScanner(in string) Scanner {
 }
 
 // Peek returns the next rune without discarding the current
-func (s *Scanner) Peek() (bool, rune) {
+func (s *Scanner) Peek() rune {
 	// A "for range" loop is used because it decodes one UTF-8-encoded rune on
 	// each iteration.
 	for _, r := range s.stream {
-		return true, r
+		return r
 	}
-	return false, NUL
+	return NUL
 }
 
-func (s *Scanner) Next() (bool, rune) {
+func (s *Scanner) Next() rune {
 	for _, r := range s.stream {
 		s.stream = s.stream[1:]
-		return true, r
+		return r
 	}
-	return false, NUL
+	return NUL
 }
 
 const NUL = rune(0)

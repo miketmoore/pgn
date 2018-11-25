@@ -1,5 +1,7 @@
 package pgn
 
+import "fmt"
+
 type Lexer struct {
 	scanner     Scanner
 	CurrentRule string
@@ -28,6 +30,7 @@ const (
 	WS
 	RB
 	Underscore
+	String
 )
 
 type Token struct {
@@ -61,10 +64,13 @@ tpair = lb , tname , string , rb ;
 func (l *Lexer) Tokenize() (bool, []Token) {
 	tokens := []Token{}
 
-	ok, r := l.scanner.Next()
-	if !ok {
+	r := l.scanner.Next()
+
+	if r == NUL {
+		fmt.Println("Cannot continue tokenization due to NUL rune.")
 		return false, tokens
 	}
+
 	if r == rune('[') {
 		// tpair = lb , tname , string , rb ;
 		ok, value := l.readTagName()
@@ -75,6 +81,20 @@ func (l *Lexer) Tokenize() (bool, []Token) {
 			Value: value,
 			Type:  TagName,
 		})
+
+		ok = l.readWhitespace()
+		if !ok {
+			return false, tokens
+		}
+
+		ok, value = l.readString()
+		if !ok {
+			return false, tokens
+		}
+		tokens = append(tokens, Token{
+			Value: value,
+			Type:  String,
+		})
 	}
 	return true, tokens
 }
@@ -84,23 +104,53 @@ func (l *Lexer) Tokenize() (bool, []Token) {
 func (l *Lexer) readTagName() (bool, string) {
 	s := ""
 	ok := true
-	i := 0
 	for ok {
-		peekOk, peekVal := l.scanner.Peek()
-		if !peekOk {
-			return false, s
-		}
+		peekVal := l.scanner.Peek()
 		if isLetter(peekVal) || isDigit(peekVal) || isUnderscore(peekVal) {
-			nextOk, nextVal := l.scanner.Next()
-			if !nextOk {
-				return false, s
-			}
+			nextVal := l.scanner.Next()
 			s = s + string(nextVal)
 		} else {
 			ok = false
 		}
-		i++
 	}
+	return true, s
+}
+
+func (l *Lexer) readWhitespace() bool {
+	ok := true
+	for ok {
+		peekVal := l.scanner.Peek()
+		if !isWhiteSpace(peekVal) {
+			return true
+		}
+		l.scanner.Next()
+	}
+	return true
+}
+
+func (l *Lexer) readString() (bool, string) {
+	s := ""
+	ok := true
+
+	// check for opening dbl quote
+	peekValue := l.scanner.Peek()
+	if !isDoubleQuote(peekValue) {
+		return false, s
+	}
+	l.scanner.Next()
+
+	// don't collect the opening quote
+
+	for ok {
+		peekVal := l.scanner.Peek()
+		if isPrintingChar(peekVal) || isWhiteSpace(peekVal) {
+			nextVal := l.scanner.Next()
+			s = s + string(nextVal)
+		} else {
+			ok = false
+		}
+	}
+	fmt.Println("result", s)
 	return true, s
 }
 
