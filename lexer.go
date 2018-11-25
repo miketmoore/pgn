@@ -41,10 +41,6 @@ type Token struct {
 	Children []Token
 }
 
-func NewToken(t TokenType, v string) Token {
-	return Token{Type: t, Value: v}
-}
-
 /*
 digit = "0" ... "9" ;
 letter = "A" ... "Z" | "a" ... "z" ;
@@ -63,9 +59,7 @@ dblq = '"' ;
 string = dblq , pchar , {pchar} , dblq ;
 tpair = lb , tname , string , rb ;
 */
-func (l *Lexer) Tokenize() (error, []Token) {
-	tokens := []Token{}
-
+func (l *Lexer) Tokenize(tokens []Token) (error, []Token) {
 	l.readWhitespace()
 
 	r := l.scanner.Peek()
@@ -111,6 +105,12 @@ func (l *Lexer) Tokenize() (error, []Token) {
 				Value: "]",
 				Type:  TagPairClose,
 			})
+		}
+
+		r = l.scanner.Peek()
+		if isNewLine(r) {
+			l.scanner.Next()
+			return l.Tokenize(tokens)
 		}
 	}
 	return nil, tokens
