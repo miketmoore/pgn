@@ -35,7 +35,15 @@ func TestIsTagPair(t *testing.T) {
 		},
 		{
 			name: "Multiple Tag Pairs",
-			in:   "[Event \"F/S Return Match\"]\n[Site \"Belgrade, Serbia JUG\"]\n[Date \"1992.11.04\"]\n[Round \"29\"]\n[White \"Fischer, Robert J.\"]\n[Black \"Spassky, Boris V.\"]\n[Result \"1/2-1/2\"]",
+			in: "[Event \"F/S Return Match\"]\n" +
+				"[Site \"Belgrade, Serbia JUG\"]\n" +
+				"[Date \"1992.11.04\"]\n[Round \"29\"]\n" +
+				"[White \"Fischer, Robert J.\"]\n" +
+				"[Black \"Spassky, Boris V.\"]\n" +
+				"[Result \"1/2-1/2\"]\n" +
+				"[a \"\"]\n" +
+				"[A \"\"]\n" +
+				"[_ \"\"]\n",
 			out: []pgn.Token{
 				pgn.Token{Type: pgn.TagPairOpen, Value: "["},
 				pgn.Token{Type: pgn.TagName, Value: "Event"},
@@ -64,6 +72,18 @@ func TestIsTagPair(t *testing.T) {
 				pgn.Token{Type: pgn.TagPairOpen, Value: "["},
 				pgn.Token{Type: pgn.TagName, Value: "Result"},
 				pgn.Token{Type: pgn.String, Value: "1/2-1/2"},
+				pgn.Token{Type: pgn.TagPairClose, Value: "]"},
+				pgn.Token{Type: pgn.TagPairOpen, Value: "["},
+				pgn.Token{Type: pgn.TagName, Value: "a"},
+				pgn.Token{Type: pgn.String, Value: ""},
+				pgn.Token{Type: pgn.TagPairClose, Value: "]"},
+				pgn.Token{Type: pgn.TagPairOpen, Value: "["},
+				pgn.Token{Type: pgn.TagName, Value: "A"},
+				pgn.Token{Type: pgn.String, Value: ""},
+				pgn.Token{Type: pgn.TagPairClose, Value: "]"},
+				pgn.Token{Type: pgn.TagPairOpen, Value: "["},
+				pgn.Token{Type: pgn.TagName, Value: "_"},
+				pgn.Token{Type: pgn.String, Value: ""},
 				pgn.Token{Type: pgn.TagPairClose, Value: "]"},
 			},
 		},

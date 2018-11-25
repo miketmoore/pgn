@@ -65,7 +65,7 @@ func (l *Lexer) Tokenize(tokens []Token) (error, []Token) {
 	r := l.scanner.Peek()
 
 	if r == NUL {
-		return errors.New("Cannot continue tokenization due to NUL rune."), tokens
+		return nil, tokens
 	}
 
 	if r == rune('[') {
