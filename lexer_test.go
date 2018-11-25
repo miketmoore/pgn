@@ -30,17 +30,15 @@ func TestIsTagPair(t *testing.T) {
 			scanner := pgn.NewScanner(test.in)
 			lexer := pgn.NewLexer(scanner)
 
-			ok, tokens := lexer.Tokenize()
+			err, tokens := lexer.Tokenize()
 
-			fmt.Println(ok)
-			fmt.Println(tokens)
-			// if !ok {
-			// 	fmt.Println(tokens)
-			// 	t.Fatal("Not OK")
-			// }
-			// if len(tokens) != len(test.out) {
-			// 	t.Fatal("failed")
-			// }
+			if err != nil {
+				t.Fatal("Unexpected error returned")
+			}
+			if len(tokens) != len(test.out) {
+				fmt.Println(tokens)
+				t.Fatal("Unexpected total tokens")
+			}
 		})
 	}
 }

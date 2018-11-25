@@ -1,6 +1,9 @@
 package pgn
 
-import "fmt"
+import (
+	"errors"
+	"fmt"
+)
 
 type Lexer struct {
 	scanner     Scanner
@@ -61,47 +64,39 @@ dblq = '"' ;
 string = dblq , pchar , {pchar} , dblq ;
 tpair = lb , tname , string , rb ;
 */
-func (l *Lexer) Tokenize() (bool, []Token) {
+func (l *Lexer) Tokenize() (error, []Token) {
 	tokens := []Token{}
 
 	r := l.scanner.Next()
 
 	if r == NUL {
-		fmt.Println("Cannot continue tokenization due to NUL rune.")
-		return false, tokens
+		return errors.New("Cannot continue tokenization due to NUL rune."), tokens
 	}
 
 	if r == rune('[') {
-		// tpair = lb , tname , string , rb ;
-		ok, value := l.readTagName()
-		if !ok {
-			return false, tokens
-		}
+		value := l.readTagName()
 		tokens = append(tokens, Token{
 			Value: value,
 			Type:  TagName,
 		})
 
-		ok = l.readWhitespace()
-		if !ok {
-			return false, tokens
-		}
+		l.readWhitespace()
 
-		ok, value = l.readString()
-		if !ok {
-			return false, tokens
+		err, value := l.readString()
+		if err != nil {
+			return err, tokens
 		}
 		tokens = append(tokens, Token{
 			Value: value,
 			Type:  String,
 		})
 	}
-	return true, tokens
+	return nil, tokens
 }
 
 // expect one or more tag name characters
 // tnc = letter | digit | und
-func (l *Lexer) readTagName() (bool, string) {
+func (l *Lexer) readTagName() string {
 	s := ""
 	ok := true
 	for ok {
@@ -113,7 +108,7 @@ func (l *Lexer) readTagName() (bool, string) {
 			ok = false
 		}
 	}
-	return true, s
+	return s
 }
 
 func (l *Lexer) readWhitespace() bool {
@@ -128,14 +123,14 @@ func (l *Lexer) readWhitespace() bool {
 	return true
 }
 
-func (l *Lexer) readString() (bool, string) {
+func (l *Lexer) readString() (error, string) {
 	s := ""
 	ok := true
 
 	// check for opening dbl quote
 	peekValue := l.scanner.Peek()
 	if !isDoubleQuote(peekValue) {
-		return false, s
+		return errors.New("Expected double quote to denote start of string token"), s
 	}
 	l.scanner.Next()
 
@@ -143,7 +138,10 @@ func (l *Lexer) readString() (bool, string) {
 
 	for ok {
 		peekVal := l.scanner.Peek()
-		if isPrintingChar(peekVal) || isWhiteSpace(peekVal) {
+		if isDoubleQuote(peekVal) {
+			l.scanner.Next()
+			return nil, s
+		} else if isPrintingChar(peekVal) || isWhiteSpace(peekVal) {
 			nextVal := l.scanner.Next()
 			s = s + string(nextVal)
 		} else {
@@ -151,7 +149,7 @@ func (l *Lexer) readString() (bool, string) {
 		}
 	}
 	fmt.Println("result", s)
-	return true, s
+	return nil, s
 }
 
 func isLBracket(r rune) bool    { return r == rune('[') }
