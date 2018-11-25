@@ -67,13 +67,19 @@ tpair = lb , tname , string , rb ;
 func (l *Lexer) Tokenize() (error, []Token) {
 	tokens := []Token{}
 
-	r := l.scanner.Next()
+	r := l.scanner.Peek()
 
 	if r == NUL {
 		return errors.New("Cannot continue tokenization due to NUL rune."), tokens
 	}
 
 	if r == rune('[') {
+		r := l.scanner.Next()
+		tokens = append(tokens, Token{
+			Value: "[",
+			Type:  TagPairOpen,
+		})
+
 		value := l.readTagName()
 		tokens = append(tokens, Token{
 			Value: value,
@@ -90,6 +96,17 @@ func (l *Lexer) Tokenize() (error, []Token) {
 			Value: value,
 			Type:  String,
 		})
+
+		r = l.scanner.Peek()
+		if r != ']' {
+			return errors.New("Expected right square bracket but found none"), tokens
+		} else {
+			l.scanner.Next()
+			tokens = append(tokens, Token{
+				Value: "]",
+				Type:  TagPairClose,
+			})
+		}
 	}
 	return nil, tokens
 }
