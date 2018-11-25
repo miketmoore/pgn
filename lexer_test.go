@@ -7,7 +7,7 @@ import (
 	pgn "github.com/miketmoore/pgn-3"
 )
 
-func TestIsTagPair(t *testing.T) {
+func TestTokenize(t *testing.T) {
 	data := []struct {
 		name string
 		in   string
