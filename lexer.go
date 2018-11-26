@@ -4,6 +4,11 @@ import (
 	"errors"
 )
 
+const (
+	literalCastleKingside  = "O-O"
+	literalCastleQueenside = "O-O-O"
+)
+
 type Lexer struct {
 	scanner     Scanner
 	CurrentRule string
@@ -38,6 +43,15 @@ const (
 	Rank
 	Piece
 	CastleKingside
+	CastleQueenside
+)
+
+const (
+	ERR_CASTLE         = "expected either queenside or kingside castle"
+	ERR_TAG_PAIR_CLOSE = "Expected right square bracket but found none"
+	ERR_FILE           = "File expected to follow piece, but not found."
+	ERR_RANK           = "Rank expected to follow file, but not found."
+	ERR_STRING_START   = "Expected double quote to denote start of string token"
 )
 
 type Token struct {
@@ -105,7 +119,7 @@ func (l *Lexer) Tokenize(tokens []Token) (error, []Token) {
 
 		r = l.scanner.Peek()
 		if r != ']' {
-			return errors.New("Expected right square bracket but found none"), tokens
+			return errors.New(ERR_TAG_PAIR_CLOSE), tokens
 		} else {
 			l.scanner.Next()
 			tokens = append(tokens, Token{
@@ -131,10 +145,6 @@ func (l *Lexer) Tokenize(tokens []Token) (error, []Token) {
 	}
 	return nil, tokens
 }
-
-const (
-	literalCastleKingside = "O-O"
-)
 
 // Rule: movetext = move , {move} ;
 // Rule: move = move-number , piece , square ;
@@ -176,31 +186,54 @@ func (l *Lexer) readMovetext() (error, []Token) {
 	return nil, tokens
 }
 
-func (l *Lexer) readCastleKingside() bool {
+func (l *Lexer) readCastle() (error, bool, Token) {
 	r := l.scanner.Peek()
-	if r == rune('O') {
-		l.scanner.Next()
-		r = l.scanner.Peek()
-		if r == rune('-') {
-			l.scanner.Next()
-			r = l.scanner.Peek()
-			if r == rune('O') {
-				l.scanner.Next()
-				return true
-			}
+	if r != rune('O') {
+		return nil, false, Token{}
+	}
+	l.scanner.Next()
+
+	r = l.scanner.Peek()
+	if r != rune('-') {
+		return errors.New(ERR_CASTLE), false, Token{}
+	}
+	l.scanner.Next()
+
+	r = l.scanner.Peek()
+	if r != rune('O') {
+		return errors.New(ERR_CASTLE), false, Token{}
+	}
+	l.scanner.Next()
+
+	r = l.scanner.Peek()
+	if r != '-' {
+		return nil, true, Token{
+			Type:  CastleKingside,
+			Value: literalCastleKingside,
 		}
 	}
-	return false
+	l.scanner.Next()
+
+	r = l.scanner.Next()
+	if r != 'O' {
+		return errors.New(ERR_CASTLE), false, Token{}
+	}
+
+	return nil, true, Token{
+		Type:  CastleQueenside,
+		Value: literalCastleQueenside,
+	}
 }
 
 func (l *Lexer) readMove() (error, []Token) {
 	tokens := []Token{}
 
-	if l.readCastleKingside() {
-		tokens = append(tokens, Token{
-			Type:  CastleKingside,
-			Value: literalCastleKingside,
-		})
+	err, castleFound, castleToken := l.readCastle()
+	if err != nil {
+		return err, tokens
+	}
+	if castleFound {
+		tokens = append(tokens, castleToken)
 		return nil, tokens
 	}
 
@@ -221,7 +254,7 @@ func (l *Lexer) readMove() (error, []Token) {
 			Value: file,
 		})
 	} else if piece != "" {
-		return errors.New("File expected to follow piece, but not found."), tokens
+		return errors.New(ERR_FILE), tokens
 	} else {
 		// no piece and no file found, so not a move
 		return nil, tokens
@@ -234,7 +267,7 @@ func (l *Lexer) readMove() (error, []Token) {
 			Value: rank,
 		})
 	} else {
-		return errors.New("Rank expected to follow file, but not found."), tokens
+		return errors.New(ERR_RANK), tokens
 	}
 
 	return nil, tokens
@@ -347,7 +380,7 @@ func (l *Lexer) readString() (error, string) {
 	// check for opening dbl quote
 	peekValue := l.scanner.Peek()
 	if !isDoubleQuote(peekValue) {
-		return errors.New("Expected double quote to denote start of string token"), s
+		return errors.New(ERR_STRING_START), s
 	}
 	l.scanner.Next()
 
