@@ -237,19 +237,22 @@ func TestTokenize(t *testing.T) {
 			tokens := []pgn.Token{}
 			err, tokens := lexer.Tokenize(tokens)
 			if test.errorMessage != "" {
-				fmt.Println("Expect error: ", test.errorMessage)
+				// Expect an error
 				if err == nil {
 					t.Fatal("Expected an error but did not receive one")
 				}
 				if err.Error() != test.errorMessage {
 					t.Fatal("Unexpected error message found")
 				}
+			} else {
+				// Do not expect error message
+				if err != nil {
+					fmt.Println("Error: ", err)
+					fmt.Println("Tokens: ", tokens)
+					t.Fatal("Unexpected error returned")
+				}
 			}
-			if err != nil {
-				fmt.Println("Error: ", err)
-				fmt.Println("Tokens: ", tokens)
-				t.Fatal("Unexpected error returned")
-			}
+
 			if len(tokens) != len(test.out) {
 				fmt.Println(tokens)
 				t.Fatal("Unexpected total tokens")
