@@ -156,6 +156,43 @@ func TestTokenize(t *testing.T) {
 				},
 			),
 		},
+		{
+			name: "Movetext - Castle Queenside - White",
+			in:   "18. O-O-O Be7",
+			out: buildTokens(
+				[]pgn.Token{
+					pgn.Token{Type: pgn.MoveNumber, Value: "18"},
+					pgn.Token{Type: pgn.CastleKingside, Value: "O-O-O"},
+					pgn.Token{Type: pgn.Piece, Value: "B"},
+					pgn.Token{Type: pgn.File, Value: "e"},
+					pgn.Token{Type: pgn.Rank, Value: "7"},
+				},
+			),
+		},
+		{
+			name: "Movetext - Castle Queenside - Black",
+			in:   "45. Ka6 O-O-O",
+			out: buildTokens(
+				[]pgn.Token{
+					pgn.Token{Type: pgn.MoveNumber, Value: "45"},
+					pgn.Token{Type: pgn.Piece, Value: "K"},
+					pgn.Token{Type: pgn.File, Value: "a"},
+					pgn.Token{Type: pgn.Rank, Value: "6"},
+					pgn.Token{Type: pgn.CastleKingside, Value: "O-O-O"},
+				},
+			),
+		},
+		{
+			name: "Movetext - Castle Queenside - Both",
+			in:   "3 O-O-O O-O-O",
+			out: buildTokens(
+				[]pgn.Token{
+					pgn.Token{Type: pgn.MoveNumber, Value: "3"},
+					pgn.Token{Type: pgn.CastleKingside, Value: "O-O-O"},
+					pgn.Token{Type: pgn.CastleKingside, Value: "O-O-O"},
+				},
+			),
+		},
 		// {
 		// 	name: "Whole game of movetext",
 		// 	in: "1. e4 e5 2. Nf3 Nc6 3. Bb5 a6 {This opening is called the Ruy Lopez.}" +
