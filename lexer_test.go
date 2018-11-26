@@ -26,9 +26,10 @@ Nf2 42. g4 Bd3 43. Re6 1/2-1/2`
 
 func TestTokenize(t *testing.T) {
 	data := []struct {
-		name string
-		in   string
-		out  []pgn.Token
+		name         string
+		in           string
+		out          []pgn.Token
+		errorMessage string
 	}{
 		{
 			name: "Tag Pair",
@@ -118,6 +119,12 @@ func TestTokenize(t *testing.T) {
 				newMove("1", "", "e4", "", "e5"),
 				newMove("2", "N", "f3", "N", "c6"),
 			),
+		},
+		{
+			name:         "Movetext - Castle Invalid",
+			in:           "1. O-",
+			out:          []pgn.Token{},
+			errorMessage: pgn.ERR_CASTLE,
 		},
 		{
 			name: "Movetext - Castle Kingside - White",
@@ -229,6 +236,15 @@ func TestTokenize(t *testing.T) {
 
 			tokens := []pgn.Token{}
 			err, tokens := lexer.Tokenize(tokens)
+			if test.errorMessage != "" {
+				fmt.Println("Expect error: ", test.errorMessage)
+				if err == nil {
+					t.Fatal("Expected an error but did not receive one")
+				}
+				if err.Error() != test.errorMessage {
+					t.Fatal("Unexpected error message found")
+				}
+			}
 			if err != nil {
 				fmt.Println("Error: ", err)
 				fmt.Println("Tokens: ", tokens)
