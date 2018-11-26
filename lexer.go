@@ -37,6 +37,7 @@ const (
 	File
 	Rank
 	Piece
+	CastleKingside
 )
 
 type Token struct {
@@ -131,6 +132,10 @@ func (l *Lexer) Tokenize(tokens []Token) (error, []Token) {
 	return nil, tokens
 }
 
+const (
+	literalCastleKingside = "O-O"
+)
+
 // Rule: movetext = move , {move} ;
 // Rule: move = move-number , piece , square ;
 // Rule: move-number = digit , {digit} , [.] ;
@@ -171,8 +176,33 @@ func (l *Lexer) readMovetext() (error, []Token) {
 	return nil, tokens
 }
 
+func (l *Lexer) readCastleKingside() bool {
+	r := l.scanner.Peek()
+	if r == rune('O') {
+		l.scanner.Next()
+		r = l.scanner.Peek()
+		if r == rune('-') {
+			l.scanner.Next()
+			r = l.scanner.Peek()
+			if r == rune('O') {
+				l.scanner.Next()
+				return true
+			}
+		}
+	}
+	return false
+}
+
 func (l *Lexer) readMove() (error, []Token) {
 	tokens := []Token{}
+
+	if l.readCastleKingside() {
+		tokens = append(tokens, Token{
+			Type:  CastleKingside,
+			Value: literalCastleKingside,
+		})
+		return nil, tokens
+	}
 
 	// piece is optional, for example e4 indicates that a Pawn (P) moved
 	piece := l.readPiece()
