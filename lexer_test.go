@@ -87,6 +87,35 @@ func TestTokenize(t *testing.T) {
 				pgn.Token{Type: pgn.TagPairClose, Value: "]"},
 			},
 		},
+		{
+			name: "Movetext - One",
+			in:   "1. e4 e5",
+			out: []pgn.Token{
+				pgn.Token{Type: pgn.MoveNumber, Value: "1"},
+				pgn.Token{Type: pgn.File, Value: "e"},
+				pgn.Token{Type: pgn.Rank, Value: "4"},
+				pgn.Token{Type: pgn.File, Value: "e"},
+				pgn.Token{Type: pgn.Rank, Value: "5"},
+			},
+		},
+		{
+			name: "Movetext - Two",
+			in:   "1. e4 e5 2. Nf3 Nc6",
+			out: []pgn.Token{
+				pgn.Token{Type: pgn.MoveNumber, Value: "1"},
+				pgn.Token{Type: pgn.File, Value: "e"},
+				pgn.Token{Type: pgn.Rank, Value: "4"},
+				pgn.Token{Type: pgn.File, Value: "e"},
+				pgn.Token{Type: pgn.Rank, Value: "5"},
+				pgn.Token{Type: pgn.MoveNumber, Value: "2"},
+				pgn.Token{Type: pgn.Piece, Value: "N"},
+				pgn.Token{Type: pgn.File, Value: "f"},
+				pgn.Token{Type: pgn.Rank, Value: "3"},
+				pgn.Token{Type: pgn.Piece, Value: "N"},
+				pgn.Token{Type: pgn.File, Value: "c"},
+				pgn.Token{Type: pgn.Rank, Value: "6"},
+			},
+		},
 	}
 
 	for _, test := range data {
