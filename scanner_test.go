@@ -3,7 +3,7 @@ package pgn_test
 import (
 	"testing"
 
-	pgn "github.com/miketmoore/pgn-3"
+	pgn "github.com/miketmoore/pgn"
 )
 
 func TestScannerPeek(t *testing.T) {

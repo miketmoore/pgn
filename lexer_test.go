@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"testing"
 
-	pgn "github.com/miketmoore/pgn-3"
+	pgn "github.com/miketmoore/pgn"
 )
 
 var gameA string = `[Event "F/S Return Match"]
