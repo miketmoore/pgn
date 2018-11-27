@@ -349,6 +349,17 @@ func (l *Lexer) readMove() (error, []Token) {
 		return nil, tokens
 	}
 
+	// a second file is optional
+	// if it exists, the previous file is the disambiguation, indicating
+	// the originating file for the moving piece
+	file = l.readFile()
+	if file != "" {
+		tokens = append(tokens, Token{
+			Type:  File,
+			Value: file,
+		})
+	}
+
 	rank := l.readRank()
 	if rank != "" {
 		tokens = append(tokens, Token{
