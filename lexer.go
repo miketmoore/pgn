@@ -45,6 +45,7 @@ const (
 	CastleKingside
 	CastleQueenside
 	Draw
+	Check
 )
 
 const (
