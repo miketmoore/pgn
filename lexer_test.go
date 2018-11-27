@@ -47,7 +47,7 @@ func TestTokenize(t *testing.T) {
 			out: []pgn.Token{
 				pgn.Token{Type: pgn.TagPairOpen, Value: "["},
 				pgn.Token{Type: pgn.TagName, Value: "Event"},
-				pgn.Token{Type: pgn.String, Value: "F/S Return Match"},
+				pgn.Token{Type: pgn.String, Value: "F/S      Return      Match"},
 				pgn.Token{Type: pgn.TagPairClose, Value: "]"},
 			},
 		},
@@ -169,7 +169,7 @@ func TestTokenize(t *testing.T) {
 			out: buildTokens(
 				[]pgn.Token{
 					pgn.Token{Type: pgn.MoveNumber, Value: "18"},
-					pgn.Token{Type: pgn.CastleKingside, Value: "O-O-O"},
+					pgn.Token{Type: pgn.CastleQueenside, Value: "O-O-O"},
 					pgn.Token{Type: pgn.Piece, Value: "B"},
 					pgn.Token{Type: pgn.File, Value: "e"},
 					pgn.Token{Type: pgn.Rank, Value: "7"},
@@ -185,7 +185,7 @@ func TestTokenize(t *testing.T) {
 					pgn.Token{Type: pgn.Piece, Value: "K"},
 					pgn.Token{Type: pgn.File, Value: "a"},
 					pgn.Token{Type: pgn.Rank, Value: "6"},
-					pgn.Token{Type: pgn.CastleKingside, Value: "O-O-O"},
+					pgn.Token{Type: pgn.CastleQueenside, Value: "O-O-O"},
 				},
 			),
 		},
@@ -195,8 +195,21 @@ func TestTokenize(t *testing.T) {
 			out: buildTokens(
 				[]pgn.Token{
 					pgn.Token{Type: pgn.MoveNumber, Value: "3"},
-					pgn.Token{Type: pgn.CastleKingside, Value: "O-O-O"},
-					pgn.Token{Type: pgn.CastleKingside, Value: "O-O-O"},
+					pgn.Token{Type: pgn.CastleQueenside, Value: "O-O-O"},
+					pgn.Token{Type: pgn.CastleQueenside, Value: "O-O-O"},
+				},
+			),
+		},
+		{
+			name: "Movetext - Result Draw",
+			in:   "43. Re6 1/2-1/2",
+			out: buildTokens(
+				[]pgn.Token{
+					pgn.Token{Type: pgn.MoveNumber, Value: "43"},
+					pgn.Token{Type: pgn.Piece, Value: "R"},
+					pgn.Token{Type: pgn.File, Value: "e"},
+					pgn.Token{Type: pgn.Rank, Value: "6"},
+					pgn.Token{Type: pgn.Draw, Value: "1/2-1/2"},
 				},
 			),
 		},
@@ -256,6 +269,15 @@ func TestTokenize(t *testing.T) {
 			if len(tokens) != len(test.out) {
 				fmt.Println(tokens)
 				t.Fatal("Unexpected total tokens")
+			}
+
+			for i, a := range tokens {
+				b := test.out[i]
+				if a.Type != b.Type || a.Value != b.Value {
+					fmt.Printf("Got:\n%v\n", a)
+					fmt.Printf("Exp:\n%v\n", b)
+					t.Fatal("Unexpected token")
+				}
 			}
 		})
 	}

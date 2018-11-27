@@ -44,6 +44,7 @@ const (
 	Piece
 	CastleKingside
 	CastleQueenside
+	Draw
 )
 
 const (
