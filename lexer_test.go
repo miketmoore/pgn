@@ -242,6 +242,22 @@ func TestTokenize(t *testing.T) {
 				},
 			),
 		},
+		{
+			name: "Movetext - Checking Move - Black",
+			in:   "43. Ke6 Bf4+",
+			out: buildTokens(
+				[]pgn.Token{
+					pgn.Token{Type: pgn.MoveNumber, Value: "43"},
+					pgn.Token{Type: pgn.Piece, Value: "K"},
+					pgn.Token{Type: pgn.File, Value: "e"},
+					pgn.Token{Type: pgn.Rank, Value: "6"},
+					pgn.Token{Type: pgn.Piece, Value: "B"},
+					pgn.Token{Type: pgn.File, Value: "f"},
+					pgn.Token{Type: pgn.Rank, Value: "4"},
+					pgn.Token{Type: pgn.Check, Value: "+"},
+				},
+			),
+		},
 		// {
 		// 	name: "Whole game of movetext",
 		// 	in: "1. e4 e5 2. Nf3 Nc6 3. Bb5 a6 {This opening is called the Ruy Lopez.}" +
