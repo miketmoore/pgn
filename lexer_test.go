@@ -352,33 +352,33 @@ func TestTokenize(t *testing.T) {
 				},
 			),
 		},
-		// {
-		// 	name: "Whole game of movetext",
-		// 	in: "1. e4 e5 2. Nf3 Nc6 3. Bb5 a6 {This opening is called the Ruy Lopez.}" +
-		// 		"4. Ba4 Nf6 5. O-O Be7 6. Re1 b5 7. Bb3 d6 8. c3 O-O 9. h3 Nb8",
-		// 	out: buildTokens(
-		// 		newMove("1", "", "e4", "", "e5"),
-		// 		newMove("2", "N", "f3", "N", "c6"),
-		// 		newMove("3", "B", "b5", "", "a6"),
-		// 		newMove("4", "B", "a4", "N", "f6"),
-		// 		[]pgn.Token{
-		// 			pgn.Token{Type: pgn.MoveNumber, Value: "5"},
-		// 			pgn.Token{Type: pgn.CastleKingside, Value: "O-O"},
-		// 			pgn.Token{Type: pgn.Piece, Value: "B"},
-		// 			pgn.Token{Type: pgn.File, Value: "e"},
-		// 			pgn.Token{Type: pgn.Rank, Value: "7"},
-		// 		},
-		// 		newMove("6", "R", "e1", "", "b5"),
-		// 		newMove("7", "B", "b3", "", "d6"),
-		// 		[]pgn.Token{
-		// 			pgn.Token{Type: pgn.MoveNumber, Value: "8"},
-		// 			pgn.Token{Type: pgn.File, Value: "c"},
-		// 			pgn.Token{Type: pgn.Rank, Value: "3"},
-		// 			pgn.Token{Type: pgn.CastleKingside, Value: "O-O"},
-		// 		},
-		// 		newMove("9", "", "h3", "N", "b8"),
-		// 	),
-		// },
+		{
+			name: "Whole game of movetext",
+			in: "1. e4 e5 2. Nf3 Nc6 3. Bb5 a6 {This opening is called the Ruy Lopez.}" +
+				"4. Ba4 Nf6 5. O-O Be7 6. Re1 b5 7. Bb3 d6 8. c3 O-O 9. h3 Nb8",
+			out: buildTokens(
+				newMove("1", "", "e4", "", "e5"),
+				newMove("2", "N", "f3", "N", "c6"),
+				newMove("3", "B", "b5", "", "a6"),
+				newMove("4", "B", "a4", "N", "f6"),
+				[]pgn.Token{
+					pgn.Token{Type: pgn.MoveNumber, Value: "5"},
+					pgn.Token{Type: pgn.CastleKingside, Value: "O-O"},
+					pgn.Token{Type: pgn.Piece, Value: "B"},
+					pgn.Token{Type: pgn.File, Value: "e"},
+					pgn.Token{Type: pgn.Rank, Value: "7"},
+				},
+				newMove("6", "R", "e1", "", "b5"),
+				newMove("7", "B", "b3", "", "d6"),
+				[]pgn.Token{
+					pgn.Token{Type: pgn.MoveNumber, Value: "8"},
+					pgn.Token{Type: pgn.File, Value: "c"},
+					pgn.Token{Type: pgn.Rank, Value: "3"},
+					pgn.Token{Type: pgn.CastleKingside, Value: "O-O"},
+				},
+				newMove("9", "", "h3", "N", "b8"),
+			),
+		},
 	}
 
 	for _, test := range data {
