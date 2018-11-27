@@ -246,6 +246,15 @@ func (l *Lexer) readDraw() (error, string) {
 	return nil, "1/2-1/2"
 }
 
+func (l *Lexer) readCheck() bool {
+	r := l.scanner.Peek()
+	if r == rune('+') {
+		l.scanner.Next()
+		return true
+	}
+	return false
+}
+
 func (l *Lexer) readMove() (error, []Token) {
 	tokens := []Token{}
 
@@ -301,6 +310,14 @@ func (l *Lexer) readMove() (error, []Token) {
 		})
 	} else {
 		return errors.New(ERR_RANK), tokens
+	}
+
+	isCheck := l.readCheck()
+	if isCheck {
+		tokens = append(tokens, Token{
+			Type:  Check,
+			Value: "+",
+		})
 	}
 
 	return nil, tokens
