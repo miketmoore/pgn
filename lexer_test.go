@@ -201,7 +201,7 @@ func TestTokenize(t *testing.T) {
 			),
 		},
 		{
-			name: "Movetext - Result Draw",
+			name: "Movetext - Result Draw - Black",
 			in:   "43. Re6 1/2-1/2",
 			out: buildTokens(
 				[]pgn.Token{
@@ -210,6 +210,19 @@ func TestTokenize(t *testing.T) {
 					pgn.Token{Type: pgn.File, Value: "e"},
 					pgn.Token{Type: pgn.Rank, Value: "6"},
 					pgn.Token{Type: pgn.Draw, Value: "1/2-1/2"},
+				},
+			),
+		},
+		{
+			name: "Movetext - Result Draw - White",
+			in:   "43. 1/2-1/2 Re6",
+			out: buildTokens(
+				[]pgn.Token{
+					pgn.Token{Type: pgn.MoveNumber, Value: "43"},
+					pgn.Token{Type: pgn.Draw, Value: "1/2-1/2"},
+					pgn.Token{Type: pgn.Piece, Value: "R"},
+					pgn.Token{Type: pgn.File, Value: "e"},
+					pgn.Token{Type: pgn.Rank, Value: "6"},
 				},
 			),
 		},
