@@ -320,6 +320,36 @@ func TestTokenize(t *testing.T) {
 				},
 			),
 		},
+		{
+			name: "Movetext - Capture - White",
+			in:   "2. Rxf5 e4",
+			out: buildTokens(
+				[]pgn.Token{
+					pgn.Token{Type: pgn.MoveNumber, Value: "2"},
+					pgn.Token{Type: pgn.Piece, Value: "R"},
+					pgn.Token{Type: pgn.Capture, Value: "x"},
+					pgn.Token{Type: pgn.File, Value: "f"},
+					pgn.Token{Type: pgn.Rank, Value: "5"},
+					pgn.Token{Type: pgn.File, Value: "e"},
+					pgn.Token{Type: pgn.Rank, Value: "4"},
+				},
+			),
+		},
+		{
+			name: "Movetext - Capture - Black",
+			in:   "2. Rf5 xe4",
+			out: buildTokens(
+				[]pgn.Token{
+					pgn.Token{Type: pgn.MoveNumber, Value: "2"},
+					pgn.Token{Type: pgn.Piece, Value: "R"},
+					pgn.Token{Type: pgn.File, Value: "f"},
+					pgn.Token{Type: pgn.Rank, Value: "5"},
+					pgn.Token{Type: pgn.Capture, Value: "x"},
+					pgn.Token{Type: pgn.File, Value: "e"},
+					pgn.Token{Type: pgn.Rank, Value: "4"},
+				},
+			),
+		},
 		// {
 		// 	name: "Whole game of movetext",
 		// 	in: "1. e4 e5 2. Nf3 Nc6 3. Bb5 a6 {This opening is called the Ruy Lopez.}" +

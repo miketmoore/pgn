@@ -48,6 +48,7 @@ const (
 	Check
 	Checkmate
 	Promotion
+	Capture
 )
 
 const (
