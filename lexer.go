@@ -228,32 +228,16 @@ func (l *Lexer) readCastle() (error, bool, Token) {
 }
 
 func (l *Lexer) readDraw() (error, string) {
+	toMatch := "1/2-1/2"
+
 	r := l.scanner.Peek()
-	if r == rune('1') {
+	if r == rune(toMatch[0]) {
 		l.scanner.Next()
-		r = l.scanner.Next()
-		if r != rune('/') {
-			return errors.New(ERR_DRAW), ""
-		}
-		r = l.scanner.Next()
-		if r != rune('2') {
-			return errors.New(ERR_DRAW), ""
-		}
-		r = l.scanner.Next()
-		if r != rune('-') {
-			return errors.New(ERR_DRAW), ""
-		}
-		r = l.scanner.Next()
-		if r != rune('1') {
-			return errors.New(ERR_DRAW), ""
-		}
-		r = l.scanner.Next()
-		if r != rune('/') {
-			return errors.New(ERR_DRAW), ""
-		}
-		r = l.scanner.Next()
-		if r != rune('2') {
-			return errors.New(ERR_DRAW), ""
+		for _, rb := range toMatch[1:] {
+			r = l.scanner.Next()
+			if r != rb {
+				return errors.New(ERR_DRAW), ""
+			}
 		}
 	} else {
 		return nil, ""
