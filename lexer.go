@@ -266,6 +266,15 @@ func (l *Lexer) readCheckmate() bool {
 	return false
 }
 
+func (l *Lexer) readPromotion() bool {
+	r := l.scanner.Peek()
+	if r == rune('=') {
+		l.scanner.Next()
+		return true
+	}
+	return false
+}
+
 func (l *Lexer) readMove() (error, []Token) {
 	tokens := []Token{}
 
@@ -334,6 +343,13 @@ func (l *Lexer) readMove() (error, []Token) {
 		tokens = append(tokens, Token{
 			Type:  Checkmate,
 			Value: "#",
+		})
+	}
+
+	if l.readPromotion() {
+		tokens = append(tokens, Token{
+			Type:  Promotion,
+			Value: "=",
 		})
 	}
 
