@@ -53,6 +53,7 @@ const (
 	ERR_FILE           = "File expected to follow piece, but not found."
 	ERR_RANK           = "Rank expected to follow file, but not found."
 	ERR_STRING_START   = "Expected double quote to denote start of string token"
+	ERR_DRAW           = "Expected game draw token"
 )
 
 type Token struct {
@@ -226,8 +227,54 @@ func (l *Lexer) readCastle() (error, bool, Token) {
 	}
 }
 
+func (l *Lexer) readDraw() (error, string) {
+	r := l.scanner.Peek()
+	if r == rune('1') {
+		l.scanner.Next()
+		r = l.scanner.Next()
+		if r != rune('/') {
+			return errors.New(ERR_DRAW), ""
+		}
+		r = l.scanner.Next()
+		if r != rune('2') {
+			return errors.New(ERR_DRAW), ""
+		}
+		r = l.scanner.Next()
+		if r != rune('-') {
+			return errors.New(ERR_DRAW), ""
+		}
+		r = l.scanner.Next()
+		if r != rune('1') {
+			return errors.New(ERR_DRAW), ""
+		}
+		r = l.scanner.Next()
+		if r != rune('/') {
+			return errors.New(ERR_DRAW), ""
+		}
+		r = l.scanner.Next()
+		if r != rune('2') {
+			return errors.New(ERR_DRAW), ""
+		}
+	} else {
+		return nil, ""
+	}
+	return nil, "1/2-1/2"
+}
+
 func (l *Lexer) readMove() (error, []Token) {
 	tokens := []Token{}
+
+	err, draw := l.readDraw()
+	if err != nil {
+		return err, tokens
+	}
+	if draw != "" {
+		tokens = append(tokens, Token{
+			Type:  Draw,
+			Value: draw,
+		})
+		return nil, tokens
+	}
 
 	err, castleFound, castleToken := l.readCastle()
 	if err != nil {
