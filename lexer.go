@@ -276,6 +276,15 @@ func (l *Lexer) readPromotion() bool {
 	return false
 }
 
+func (l *Lexer) readCapture() bool {
+	r := l.scanner.Peek()
+	if r == rune('x') {
+		l.scanner.Next()
+		return true
+	}
+	return false
+}
+
 func (l *Lexer) readMove() (error, []Token) {
 	tokens := []Token{}
 
@@ -306,6 +315,13 @@ func (l *Lexer) readMove() (error, []Token) {
 		tokens = append(tokens, Token{
 			Type:  Piece,
 			Value: piece,
+		})
+	}
+
+	if l.readCapture() {
+		tokens = append(tokens, Token{
+			Type:  Capture,
+			Value: "x",
 		})
 	}
 
