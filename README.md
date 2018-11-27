@@ -10,6 +10,14 @@ This is a Portable Game Notation (PGN) parser written in Go.
 go get github.com/miketmoore/pgn
 ```
 
+### Install & Run
+
+```
+cd ~/go/src/github.com/miketmoore/pgn/
+go install cmd/parser/parser.go
+pgn -input ./data/games/fischer_spassky_1992_11_04.pgn
+```
+
 ### Tests
 
 ```
