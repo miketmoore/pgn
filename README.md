@@ -2,6 +2,20 @@
 
 This is a Portable Game Notation (PGN) parser written in Go.
 
+## Development
+
+### Get
+
+```
+go get github.com/miketmoore/pgn
+```
+
+### Tests
+
+```
+go test
+```
+
 ## Production Rules
 
 List of production rules in EBNF grammar.
