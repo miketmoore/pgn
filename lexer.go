@@ -46,6 +46,7 @@ const (
 	CastleQueenside
 	Draw
 	Check
+	Checkmate
 )
 
 const (
@@ -255,6 +256,15 @@ func (l *Lexer) readCheck() bool {
 	return false
 }
 
+func (l *Lexer) readCheckmate() bool {
+	r := l.scanner.Peek()
+	if r == rune('#') {
+		l.scanner.Next()
+		return true
+	}
+	return false
+}
+
 func (l *Lexer) readMove() (error, []Token) {
 	tokens := []Token{}
 
@@ -312,11 +322,17 @@ func (l *Lexer) readMove() (error, []Token) {
 		return errors.New(ERR_RANK), tokens
 	}
 
-	isCheck := l.readCheck()
-	if isCheck {
+	if l.readCheck() {
 		tokens = append(tokens, Token{
 			Type:  Check,
 			Value: "+",
+		})
+	}
+
+	if l.readCheckmate() {
+		tokens = append(tokens, Token{
+			Type:  Checkmate,
+			Value: "#",
 		})
 	}
 
