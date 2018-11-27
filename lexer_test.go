@@ -353,6 +353,12 @@ func TestTokenize(t *testing.T) {
 			),
 		},
 		{
+			name:         "Comment without closing brace",
+			in:           "1. a4 e5 { aslks  klasdf i23lk43nncklj3#$1412kfdlsjf ",
+			out:          []pgn.Token{},
+			errorMessage: pgn.ERR_COMMENT_NOT_CLOSED,
+		},
+		{
 			name: "Whole game of movetext",
 			in: "1. e4 e5 2. Nf3 Nc6 3. Bb5 a6 {This opening is called the Ruy Lopez.}" +
 				"4. Ba4 Nf6 5. O-O Be7 6. Re1 b5 7. Bb3 d6 8. c3 O-O 9. h3 Nb8",

@@ -53,13 +53,14 @@ const (
 )
 
 const (
-	ERR_CASTLE         = "expected either queenside or kingside castle"
-	ERR_TAG_PAIR_CLOSE = "Expected right square bracket but found none"
-	ERR_FILE           = "File expected to follow piece, but not found."
-	ERR_RANK           = "Rank expected to follow file, but not found."
-	ERR_STRING_START   = "Expected double quote to denote start of string token"
-	ERR_DRAW           = "Expected game draw token"
-	ERR_PROMOTION      = "Expected promotion piece"
+	ERR_CASTLE             = "expected either queenside or kingside castle"
+	ERR_TAG_PAIR_CLOSE     = "Expected right square bracket but found none"
+	ERR_FILE               = "File expected to follow piece, but not found."
+	ERR_RANK               = "Rank expected to follow file, but not found."
+	ERR_STRING_START       = "Expected double quote to denote start of string token"
+	ERR_DRAW               = "Expected game draw token"
+	ERR_PROMOTION          = "Expected promotion piece"
+	ERR_COMMENT_NOT_CLOSED = "Comment not closed"
 )
 
 type Token struct {
@@ -190,6 +191,11 @@ func (l *Lexer) readMovetext() (error, []Token) {
 		}
 
 		l.readWhitespace()
+
+		err = l.readComment()
+		if err != nil {
+			return err, tokens
+		}
 	}
 	return nil, tokens
 }
@@ -483,6 +489,25 @@ func (l *Lexer) readWhitespace() {
 		l.scanner.Next()
 	}
 	return
+}
+
+func (l *Lexer) readComment() error {
+	r := l.scanner.Peek()
+	if r == rune('{') {
+		l.scanner.Next()
+
+		for {
+			r := l.scanner.Next()
+			if r == NUL {
+				return errors.New(ERR_COMMENT_NOT_CLOSED)
+			}
+			if r == rune('}') {
+				return nil
+			}
+		}
+
+	}
+	return nil
 }
 
 func (l *Lexer) readString() (error, string) {
