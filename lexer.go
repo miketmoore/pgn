@@ -90,16 +90,17 @@ tpair = lb , tname , string , rb ;
 func (l *Lexer) Tokenize(tokens []Token) (error, []Token) {
 	l.readWhitespace()
 
-	r := l.scanner.Peek()
+	startRune := l.scanner.Peek()
 
-	if r == NUL {
+	if isNul(startRune) {
 		return nil, tokens
 	}
 
-	if r == rune('[') {
+	if isLBracket(startRune) {
 		// Rule: tpair = lb , tname , string , rb ;
 
-		r := l.scanner.Next()
+		l.scanner.Next()
+
 		tokens = append(tokens, Token{
 			Value: "[",
 			Type:  TagPairOpen,
@@ -126,8 +127,7 @@ func (l *Lexer) Tokenize(tokens []Token) (error, []Token) {
 
 		l.readWhitespace()
 
-		r = l.scanner.Peek()
-		if r != ']' {
+		if l.scanner.Peek() != ']' {
 			return errors.New(ERR_TAG_PAIR_CLOSE), tokens
 		} else {
 			l.scanner.Next()
@@ -137,12 +137,11 @@ func (l *Lexer) Tokenize(tokens []Token) (error, []Token) {
 			})
 		}
 
-		r = l.scanner.Peek()
-		if isNewLine(r) {
+		if isNewLine(l.scanner.Peek()) {
 			l.scanner.Next()
 			return l.Tokenize(tokens)
 		}
-	} else if isDigit(r) {
+	} else if isDigit(startRune) {
 		// Rule: movetext = move , {move} ;
 		err, movetextTokens := l.readMovetext()
 		if err != nil {
@@ -258,8 +257,7 @@ func (l *Lexer) readDraw() (error, string) {
 }
 
 func (l *Lexer) readCheck() bool {
-	r := l.scanner.Peek()
-	if r == rune('+') {
+	if isCheck(l.scanner.Peek()) {
 		l.scanner.Next()
 		return true
 	}
@@ -267,8 +265,7 @@ func (l *Lexer) readCheck() bool {
 }
 
 func (l *Lexer) readCheckmate() bool {
-	r := l.scanner.Peek()
-	if r == rune('#') {
+	if isCheckmate(l.scanner.Peek()) {
 		l.scanner.Next()
 		return true
 	}
@@ -278,22 +275,20 @@ func (l *Lexer) readCheckmate() bool {
 func (l *Lexer) readPromotion() (error, []Token) {
 	tokens := []Token{}
 
-	r := l.scanner.Peek()
-	if r == rune('=') {
+	if isPromotionIndicator(l.scanner.Peek()) {
 		l.scanner.Next()
-		r = l.scanner.Next()
-		if !isPromotionPiece(r) {
+		promoPieceRune := l.scanner.Next()
+		if !isPromotionPiece(promoPieceRune) {
 			return errors.New(ERR_PROMOTION), tokens
 		}
 		tokens = append(tokens, Token{Type: PromotionIndicator, Value: "="})
-		tokens = append(tokens, Token{Type: PromotionPiece, Value: string(r)})
+		tokens = append(tokens, Token{Type: PromotionPiece, Value: string(promoPieceRune)})
 	}
 	return nil, tokens
 }
 
 func (l *Lexer) readCapture() bool {
-	r := l.scanner.Peek()
-	if r == rune('x') {
+	if isCapture(l.scanner.Peek()) {
 		l.scanner.Next()
 		return true
 	}
@@ -460,8 +455,6 @@ func (l *Lexer) skip(predicate func(r rune) bool) {
 	return
 }
 
-func isPeriod(r rune) bool { return r == rune('.') }
-
 // expect one or more tag name characters
 // tnc = letter | digit | und
 func (l *Lexer) readTagName() string {
@@ -492,16 +485,15 @@ func (l *Lexer) readWhitespace() {
 }
 
 func (l *Lexer) readComment() error {
-	r := l.scanner.Peek()
-	if r == rune('{') {
+	if isCommentOpen(l.scanner.Peek()) {
 		l.scanner.Next()
 
 		for {
 			r := l.scanner.Next()
-			if r == NUL {
+			if isNul(r) {
 				return errors.New(ERR_COMMENT_NOT_CLOSED)
 			}
-			if r == rune('}') {
+			if isCommentClose(r) {
 				return nil
 			}
 		}
@@ -538,27 +530,32 @@ func (l *Lexer) readString() (error, string) {
 	return nil, s
 }
 
-func isLBracket(r rune) bool    { return r == rune('[') }
-func isRBracket(r rune) bool    { return r == rune(']') }
-func isDoubleQuote(r rune) bool { return r == rune('"') }
-func isWhiteSpace(r rune) bool  { return r == rune(' ') }
-func isNewLine(r rune) bool     { return r == rune('\n') }
-func isLetter(r rune) bool      { return (r >= 65 && r <= 90) || (r >= 97 && r <= 122) }
-func isDigit(r rune) bool       { return r >= 48 && r <= 57 }
-func isUnderscore(r rune) bool  { return r == rune('_') }
-
-/*
-pawn = "P" ;
-knight = "N" ;
-bishop = "B" ;
-rook = "R" ;
-queen = "Q" ;
-king = "K" ;
-*/
-func isPiece(r rune) bool          { return r == 'P' || r == 'N' || r == 'B' || r == 'R' || r == 'Q' || r == 'K' }
-func isPromotionPiece(r rune) bool { return r == 'N' || r == 'B' || r == 'R' || r == 'Q' }
-func isFile(r rune) bool           { return r >= 97 && r <= 104 }
-func isRank(r rune) bool           { return r >= 49 && r <= 56 }
+func isLBracket(r rune) bool     { return r == rune('[') }
+func isRBracket(r rune) bool     { return r == rune(']') }
+func isCommentOpen(r rune) bool  { return r == rune('{') }
+func isCommentClose(r rune) bool { return r == rune('}') }
+func isDoubleQuote(r rune) bool  { return r == rune('"') }
+func isWhiteSpace(r rune) bool   { return r == rune(' ') }
+func isNewLine(r rune) bool      { return r == rune('\n') }
+func isLetter(r rune) bool {
+	return (r >= 65 && r <= 90) || (r >= 97 && r <= 122)
+}
+func isDigit(r rune) bool              { return r >= 48 && r <= 57 }
+func isUnderscore(r rune) bool         { return r == rune('_') }
+func isCheck(r rune) bool              { return r == rune('+') }
+func isCheckmate(r rune) bool          { return r == rune('#') }
+func isPromotionIndicator(r rune) bool { return r == rune('=') }
+func isCapture(r rune) bool            { return r == rune('x') }
+func isNul(r rune) bool                { return r == NUL }
+func isPeriod(r rune) bool             { return r == rune('.') }
+func isPiece(r rune) bool {
+	return r == 'P' || r == 'N' || r == 'B' || r == 'R' || r == 'Q' || r == 'K'
+}
+func isPromotionPiece(r rune) bool {
+	return r == 'N' || r == 'B' || r == 'R' || r == 'Q'
+}
+func isFile(r rune) bool { return r >= 97 && r <= 104 }
+func isRank(r rune) bool { return r >= 49 && r <= 56 }
 func isSpecialChar(r rune) bool {
 	return (r >= 33 && r <= 47) ||
 		(r >= 58 && r <= 64) ||
