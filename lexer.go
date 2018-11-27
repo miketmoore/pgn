@@ -47,6 +47,7 @@ const (
 	Draw
 	Check
 	Checkmate
+	Promotion
 )
 
 const (
