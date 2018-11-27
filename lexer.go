@@ -47,7 +47,8 @@ const (
 	Draw
 	Check
 	Checkmate
-	Promotion
+	PromotionIndicator
+	PromotionPiece
 	Capture
 )
 
@@ -58,6 +59,7 @@ const (
 	ERR_RANK           = "Rank expected to follow file, but not found."
 	ERR_STRING_START   = "Expected double quote to denote start of string token"
 	ERR_DRAW           = "Expected game draw token"
+	ERR_PROMOTION      = "Expected promotion piece"
 )
 
 type Token struct {
@@ -267,13 +269,20 @@ func (l *Lexer) readCheckmate() bool {
 	return false
 }
 
-func (l *Lexer) readPromotion() bool {
+func (l *Lexer) readPromotion() (error, []Token) {
+	tokens := []Token{}
+
 	r := l.scanner.Peek()
 	if r == rune('=') {
 		l.scanner.Next()
-		return true
+		r = l.scanner.Next()
+		if !isPromotionPiece(r) {
+			return errors.New(ERR_PROMOTION), tokens
+		}
+		tokens = append(tokens, Token{Type: PromotionIndicator, Value: "="})
+		tokens = append(tokens, Token{Type: PromotionPiece, Value: string(r)})
 	}
-	return false
+	return nil, tokens
 }
 
 func (l *Lexer) readCapture() bool {
@@ -363,11 +372,14 @@ func (l *Lexer) readMove() (error, []Token) {
 		})
 	}
 
-	if l.readPromotion() {
-		tokens = append(tokens, Token{
-			Type:  Promotion,
-			Value: "=",
-		})
+	err, promoTokens := l.readPromotion()
+	if err != nil {
+		return err, tokens
+	}
+	if len(tokens) > 0 {
+		for _, t := range promoTokens {
+			tokens = append(tokens, t)
+		}
 	}
 
 	return nil, tokens
@@ -518,9 +530,10 @@ rook = "R" ;
 queen = "Q" ;
 king = "K" ;
 */
-func isPiece(r rune) bool { return r == 'P' || r == 'N' || r == 'B' || r == 'R' || r == 'Q' || r == 'K' }
-func isFile(r rune) bool  { return r >= 97 && r <= 104 }
-func isRank(r rune) bool  { return r >= 49 && r <= 56 }
+func isPiece(r rune) bool          { return r == 'P' || r == 'N' || r == 'B' || r == 'R' || r == 'Q' || r == 'K' }
+func isPromotionPiece(r rune) bool { return r == 'N' || r == 'B' || r == 'R' || r == 'Q' }
+func isFile(r rune) bool           { return r >= 97 && r <= 104 }
+func isRank(r rune) bool           { return r >= 49 && r <= 56 }
 func isSpecialChar(r rune) bool {
 	return (r >= 33 && r <= 47) ||
 		(r >= 58 && r <= 64) ||

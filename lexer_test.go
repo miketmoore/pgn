@@ -292,13 +292,14 @@ func TestTokenize(t *testing.T) {
 		},
 		{
 			name: "Movetext - Pawn Promotion - White",
-			in:   "2. e4= Rf5",
+			in:   "2. e4=B Rf5",
 			out: buildTokens(
 				[]pgn.Token{
 					pgn.Token{Type: pgn.MoveNumber, Value: "2"},
 					pgn.Token{Type: pgn.File, Value: "e"},
 					pgn.Token{Type: pgn.Rank, Value: "4"},
-					pgn.Token{Type: pgn.Promotion, Value: "="},
+					pgn.Token{Type: pgn.PromotionIndicator, Value: "="},
+					pgn.Token{Type: pgn.PromotionPiece, Value: "B"},
 					pgn.Token{Type: pgn.Piece, Value: "R"},
 					pgn.Token{Type: pgn.File, Value: "f"},
 					pgn.Token{Type: pgn.Rank, Value: "5"},
@@ -307,7 +308,7 @@ func TestTokenize(t *testing.T) {
 		},
 		{
 			name: "Movetext - Pawn Promotion - Black",
-			in:   "2. Rf5 e4=",
+			in:   "2. Rf5 e4=Q",
 			out: buildTokens(
 				[]pgn.Token{
 					pgn.Token{Type: pgn.MoveNumber, Value: "2"},
@@ -316,7 +317,8 @@ func TestTokenize(t *testing.T) {
 					pgn.Token{Type: pgn.Rank, Value: "5"},
 					pgn.Token{Type: pgn.File, Value: "e"},
 					pgn.Token{Type: pgn.Rank, Value: "4"},
-					pgn.Token{Type: pgn.Promotion, Value: "="},
+					pgn.Token{Type: pgn.PromotionIndicator, Value: "="},
+					pgn.Token{Type: pgn.PromotionPiece, Value: "Q"},
 				},
 			),
 		},
