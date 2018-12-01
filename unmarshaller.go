@@ -1,6 +1,11 @@
 package pgn
 
 type Game struct {
+	TagPairs []TagPair
+}
+
+type TagPair struct {
+	Name, Value string
 }
 
 type PGN struct {
