@@ -24,39 +24,39 @@ func NewLexer(scanner Scanner) Lexer {
 type TokenType int
 
 const (
-	LB TokenType = iota
-	TagNameChar
-	TagName
-	TagPairOpen
-	TagPairClose
-	TagValue
-	DBLQ
-	Letter
-	Digit
-	SpecialChar
-	WS
-	RB
-	Underscore
-	String
-	MoveNumber
-	File
-	Rank
-	Piece
-	CastleKingside
-	CastleQueenside
-	Draw
-	Check
-	Checkmate
-	PromotionIndicator
-	PromotionPiece
-	Capture
+	TokenLeftBracket TokenType = iota
+	TokenTagNameChar
+	TokenTagName
+	TokenTagPairOpen
+	TokenTagPairClose
+	TokenTagValue
+	TokenDoubleQuote
+	TokenLetter
+	TokenDigit
+	TokenSpecialChar
+	TokenWhitespace
+	TokenRightBracket
+	TokenUnderscore
+	TokenString
+	TokenMoveNumber
+	TokenFile
+	TokenRank
+	TokenPiece
+	TokenCastleKingside
+	TokenCastleQueenside
+	TokenDraw
+	TokenCheck
+	TokenCheckmate
+	TokenPromotionIndicator
+	TokenPromotionPiece
+	TokenCapture
 )
 
 const (
 	ERR_CASTLE             = "expected either queenside or kingside castle"
 	ERR_TAG_PAIR_CLOSE     = "Expected right square bracket but found none"
-	ERR_FILE               = "File expected to follow piece, but not found."
-	ERR_RANK               = "Rank expected to follow file, but not found."
+	ERR_FILE               = "TokenFile expected to follow piece, but not found."
+	ERR_RANK               = "TokenRank expected to follow file, but not found."
 	ERR_STRING_START       = "Expected double quote to denote start of string token"
 	ERR_DRAW               = "Expected game draw token"
 	ERR_PROMOTION          = "Expected promotion piece"
@@ -103,7 +103,7 @@ func (l *Lexer) Tokenize(tokens []Token) (error, []Token) {
 
 		tokens = append(tokens, Token{
 			Value: "[",
-			Type:  TagPairOpen,
+			Type:  TokenTagPairOpen,
 		})
 
 		l.readWhitespace()
@@ -111,7 +111,7 @@ func (l *Lexer) Tokenize(tokens []Token) (error, []Token) {
 		value := l.readTagName()
 		tokens = append(tokens, Token{
 			Value: value,
-			Type:  TagName,
+			Type:  TokenTagName,
 		})
 
 		l.readWhitespace()
@@ -122,7 +122,7 @@ func (l *Lexer) Tokenize(tokens []Token) (error, []Token) {
 		}
 		tokens = append(tokens, Token{
 			Value: value,
-			Type:  String,
+			Type:  TokenString,
 		})
 
 		l.readWhitespace()
@@ -133,7 +133,7 @@ func (l *Lexer) Tokenize(tokens []Token) (error, []Token) {
 			l.scanner.Next()
 			tokens = append(tokens, Token{
 				Value: "]",
-				Type:  TagPairClose,
+				Type:  TokenTagPairClose,
 			})
 		}
 
@@ -164,7 +164,7 @@ func (l *Lexer) readMovetext() (error, []Token) {
 		moveNumber := l.readMoveNumber()
 		if moveNumber != "" {
 			tokens = append(tokens, Token{
-				Type:  MoveNumber,
+				Type:  TokenMoveNumber,
 				Value: moveNumber,
 			})
 		} else {
@@ -221,7 +221,7 @@ func (l *Lexer) readCastle() (error, bool, Token) {
 	r = l.scanner.Peek()
 	if r != '-' {
 		return nil, true, Token{
-			Type:  CastleKingside,
+			Type:  TokenCastleKingside,
 			Value: literalCastleKingside,
 		}
 	}
@@ -233,7 +233,7 @@ func (l *Lexer) readCastle() (error, bool, Token) {
 	}
 
 	return nil, true, Token{
-		Type:  CastleQueenside,
+		Type:  TokenCastleQueenside,
 		Value: literalCastleQueenside,
 	}
 }
@@ -281,8 +281,8 @@ func (l *Lexer) readPromotion() (error, []Token) {
 		if !isPromotionPiece(promoPieceRune) {
 			return errors.New(ERR_PROMOTION), tokens
 		}
-		tokens = append(tokens, Token{Type: PromotionIndicator, Value: "="})
-		tokens = append(tokens, Token{Type: PromotionPiece, Value: string(promoPieceRune)})
+		tokens = append(tokens, Token{Type: TokenPromotionIndicator, Value: "="})
+		tokens = append(tokens, Token{Type: TokenPromotionPiece, Value: string(promoPieceRune)})
 	}
 	return nil, tokens
 }
@@ -304,7 +304,7 @@ func (l *Lexer) readMove() (error, []Token) {
 	}
 	if draw != "" {
 		tokens = append(tokens, Token{
-			Type:  Draw,
+			Type:  TokenDraw,
 			Value: draw,
 		})
 		return nil, tokens
@@ -323,23 +323,33 @@ func (l *Lexer) readMove() (error, []Token) {
 	piece := l.readPiece()
 	if piece != "" {
 		tokens = append(tokens, Token{
-			Type:  Piece,
+			Type:  TokenPiece,
 			Value: piece,
 		})
 	}
 
+	// a file is optional before capture
+	// Example: 12. cxb5 axb5
+	// file := l.readFile()
+	// if file != "" {
+	// 	tokens = append(tokens, Token{
+	// 		Type:  TokenFile,
+	// 		Value: file,
+	// 	})
+	// }
+
 	if l.readCapture() {
 		tokens = append(tokens, Token{
-			Type:  Capture,
+			Type:  TokenCapture,
 			Value: "x",
 		})
 	}
 
-	// File is required
+	// TokenFile is required
 	file := l.readFile()
 	if file != "" {
 		tokens = append(tokens, Token{
-			Type:  File,
+			Type:  TokenFile,
 			Value: file,
 		})
 	} else if piece != "" {
@@ -355,7 +365,7 @@ func (l *Lexer) readMove() (error, []Token) {
 	file = l.readFile()
 	if file != "" {
 		tokens = append(tokens, Token{
-			Type:  File,
+			Type:  TokenFile,
 			Value: file,
 		})
 	}
@@ -363,7 +373,7 @@ func (l *Lexer) readMove() (error, []Token) {
 	rank := l.readRank()
 	if rank != "" {
 		tokens = append(tokens, Token{
-			Type:  Rank,
+			Type:  TokenRank,
 			Value: rank,
 		})
 	} else {
@@ -372,14 +382,14 @@ func (l *Lexer) readMove() (error, []Token) {
 
 	if l.readCheck() {
 		tokens = append(tokens, Token{
-			Type:  Check,
+			Type:  TokenCheck,
 			Value: "+",
 		})
 	}
 
 	if l.readCheckmate() {
 		tokens = append(tokens, Token{
-			Type:  Checkmate,
+			Type:  TokenCheckmate,
 			Value: "#",
 		})
 	}

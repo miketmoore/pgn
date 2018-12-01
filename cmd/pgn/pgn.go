@@ -11,7 +11,7 @@ import (
 
 func main() {
 
-	file := flag.String("input", "", "Path to a *.pgn file containing zero or more games")
+	file := flag.TokenString("input", "", "Path to a *.pgn file containing zero or more games")
 	flag.Parse()
 
 	bytes, err := ioutil.ReadFile(*file)
