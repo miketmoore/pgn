@@ -423,8 +423,8 @@ func TestTokenize(t *testing.T) {
 			scanner := pgn.NewScanner(test.in)
 			lexer := pgn.NewLexer(scanner)
 
-			tokens := []pgn.Token{}
-			err, tokens := lexer.Tokenize(tokens)
+			got := []pgn.Token{}
+			err, got := lexer.Tokenize(got)
 			if test.errorMessage != "" {
 				// Expect an error
 				if err == nil {
@@ -438,21 +438,21 @@ func TestTokenize(t *testing.T) {
 				// Do not expect error message
 				if err != nil {
 					fmt.Println("Error: ", err)
-					fmt.Println("Tokens: ", tokens)
+					fmt.Println("Tokens: ", got)
 					t.Fatal("Unexpected error returned")
 				}
 			}
 
-			if len(tokens) != len(test.out) {
-				fmt.Println(tokens)
+			if len(got) != len(test.out) {
+				fmt.Println(got)
 				t.Fatal("Unexpected total tokens")
 			}
 
-			for i, a := range tokens {
-				b := test.out[i]
-				if a.Type != b.Type || a.Value != b.Value {
-					fmt.Printf("Got:\n%v\n", a)
-					fmt.Printf("Exp:\n%v\n", b)
+			for i, expectedToken := range test.out {
+				gotToken := got[i]
+				if expectedToken.Type != gotToken.Type || expectedToken.Value != gotToken.Value {
+					fmt.Printf("Got:\n%v\n", gotToken)
+					fmt.Printf("Exp:\n%v\n", expectedToken)
 					t.Fatal("Unexpected token")
 				}
 			}
