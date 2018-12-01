@@ -27,6 +27,7 @@ const (
 	TokenLeftBracket TokenType = iota
 	TokenTagNameChar
 	TokenTagName
+	TokenEOF
 	TokenTagPairOpen
 	TokenTagPairClose
 	TokenTagValue
@@ -93,6 +94,7 @@ func (l *Lexer) Tokenize(tokens []Token) (error, []Token) {
 	startRune := l.scanner.Peek()
 
 	if isNul(startRune) {
+		tokens = append(tokens, Token{Type: TokenEOF})
 		return nil, tokens
 	}
 
@@ -100,11 +102,6 @@ func (l *Lexer) Tokenize(tokens []Token) (error, []Token) {
 		// Rule: tpair = lb , tname , string , rb ;
 
 		l.scanner.Next()
-
-		tokens = append(tokens, Token{
-			Value: "[",
-			Type:  TokenTagPairOpen,
-		})
 
 		l.readWhitespace()
 
@@ -122,7 +119,7 @@ func (l *Lexer) Tokenize(tokens []Token) (error, []Token) {
 		}
 		tokens = append(tokens, Token{
 			Value: value,
-			Type:  TokenString,
+			Type:  TokenTagValue,
 		})
 
 		l.readWhitespace()
@@ -131,10 +128,6 @@ func (l *Lexer) Tokenize(tokens []Token) (error, []Token) {
 			return errors.New(ERR_TAG_PAIR_CLOSE), tokens
 		} else {
 			l.scanner.Next()
-			tokens = append(tokens, Token{
-				Value: "]",
-				Type:  TokenTagPairClose,
-			})
 		}
 
 		if isNewLine(l.scanner.Peek()) {
@@ -151,6 +144,7 @@ func (l *Lexer) Tokenize(tokens []Token) (error, []Token) {
 			tokens = append(tokens, t)
 		}
 	}
+
 	return nil, tokens
 }
 
