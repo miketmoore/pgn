@@ -14,11 +14,15 @@ func TestUnmarshal(t *testing.T) {
 		out          pgn.PGN
 		errorMessage string
 	}{
-		// {
-		// 	name: "Empty game",
-		// 	in:   "",
-		// 	out:  pgn.PGN{},
-		// },
+		{
+			name: "Empty game",
+			in:   "",
+			out: pgn.PGN{
+				Games: []pgn.Game{
+					pgn.Game{},
+				},
+			},
+		},
 		{
 			name: "Tag pair",
 			in: "[Event \"F/S Return Match\"]\n" +
