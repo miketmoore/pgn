@@ -1,6 +1,9 @@
 package pgn
 
-import "fmt"
+import (
+	"errors"
+	"strconv"
+)
 
 type Game struct {
 	TagPairs []TagPair
@@ -81,7 +84,51 @@ func Unmarshal(in string, unmarshalled *PGN) error {
 		}
 	}
 
-	fmt.Println("here", u.tokens)
+	// move text
+	ok = true
+	for ok {
+		token := u.peek()
+		if token != nil && token.Type == TokenMoveNumber {
+			u.next()
+
+			// convert value to int
+			i, err := strconv.Atoi(token.Value)
+			if err != nil {
+				return err
+			}
+
+			// create movetext instance
+			m := Movetext{
+				Num: i,
+			}
+
+			// parse white move
+			token = u.peek()
+			if token == nil {
+				return errors.New("white movetext token is nil")
+			}
+			if token.Type == TokenFile {
+				m.White = Move{File: File(token.Value)}
+			}
+
+			u.next()
+
+			// parse black move
+			token = u.peek()
+			if token == nil {
+				return errors.New("black movetext token is nil")
+			}
+			if token.Type == TokenFile {
+				m.Black = Move{File: File(token.Value)}
+			}
+
+			u.next()
+
+			game.Movetext = append(game.Movetext, m)
+		} else {
+			ok = false
+		}
+	}
 
 	unmarshalled.Games = append(unmarshalled.Games, game)
 

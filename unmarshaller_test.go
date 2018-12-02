@@ -92,6 +92,12 @@ func TestUnmarshal(t *testing.T) {
 					t.Fatal("Unexpected total movetext")
 				}
 			}
+			fmt.Printf("Total Games: %d\n", len(unmarshalled.Games))
+			for i, game := range unmarshalled.Games {
+				fmt.Printf("\tGame %d\n", i)
+				fmt.Printf("\tTotal Tag Pairs: %d\n", len(game.TagPairs))
+				fmt.Printf("\tTotal Movetext: %d\n", len(game.Movetext))
+			}
 		})
 	}
 }

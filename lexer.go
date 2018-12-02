@@ -2,7 +2,6 @@ package pgn
 
 import (
 	"errors"
-	"fmt"
 )
 
 const (
@@ -152,8 +151,8 @@ func (l *Lexer) tokenize(tokens []Token) (error, []Token) {
 		}
 	} else if startRune == rune('\n') {
 		l.scanner.Next()
-		fmt.Println("New line start rune: ", l.scanner.stream)
 		// start reading movetext
+		return l.tokenize(tokens)
 	}
 
 	return nil, tokens
