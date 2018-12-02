@@ -423,8 +423,7 @@ func TestTokenize(t *testing.T) {
 			scanner := pgn.NewScanner(test.in)
 			lexer := pgn.NewLexer(scanner)
 
-			got := []pgn.Token{}
-			err, got := lexer.Tokenize(got)
+			err, got := lexer.Tokenize()
 			if test.errorMessage != "" {
 				// Expect an error
 				if err == nil {

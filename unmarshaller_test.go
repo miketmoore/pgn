@@ -14,14 +14,22 @@ func TestUnmarshal(t *testing.T) {
 		out          pgn.PGN
 		errorMessage string
 	}{
-		{
-			name: "Empty game",
-			in:   "",
-			out:  pgn.PGN{},
-		},
+		// {
+		// 	name: "Empty game",
+		// 	in:   "",
+		// 	out:  pgn.PGN{},
+		// },
 		{
 			name: "Tag pair",
-			in:   "",
+			in: "[Event \"F/S Return Match\"]\n" +
+				"[Site \"Belgrade, Serbia JUG\"]\n" +
+				"[Date \"1992.11.04\"]\n[Round \"29\"]\n" +
+				"[White \"Fischer, Robert J.\"]\n" +
+				"[Black \"Spassky, Boris V.\"]\n" +
+				"[Result \"1/2-1/2\"]\n" +
+				"[a \"\"]\n" +
+				"[A \"\"]\n" +
+				"[_ \"\"]\n",
 			out: pgn.PGN{
 				Games: []pgn.Game{
 					pgn.Game{
@@ -33,6 +41,9 @@ func TestUnmarshal(t *testing.T) {
 							pgn.TagPair{Name: "White", Value: "Fischer, Robert J."},
 							pgn.TagPair{Name: "Black", Value: "Spassky, Boris V."},
 							pgn.TagPair{Name: "Result", Value: "1/2-1/2"},
+							pgn.TagPair{Name: "a", Value: ""},
+							pgn.TagPair{Name: "A", Value: ""},
+							pgn.TagPair{Name: "_", Value: ""},
 						},
 					},
 				},
@@ -51,11 +62,15 @@ func TestUnmarshal(t *testing.T) {
 				t.Fatal("Expected error but did not receive one")
 			}
 			if len(unmarshalled.Games) != len(test.out.Games) {
+				fmt.Println("Got:", unmarshalled.Games)
+				fmt.Println("Exp:", test.out.Games)
 				t.Fatal("Unexpected total games")
 			}
 			for i, game := range test.out.Games {
 				got := unmarshalled.Games[i]
 				if len(game.TagPairs) != len(got.TagPairs) {
+					fmt.Println("Got:", got.TagPairs)
+					fmt.Println("Exp:", game.TagPairs)
 					t.Fatal("Unexpected total tag pairs")
 				}
 			}

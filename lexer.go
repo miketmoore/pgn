@@ -88,7 +88,13 @@ dblq = '"' ;
 string = dblq , pchar , {pchar} , dblq ;
 tpair = lb , tname , string , rb ;
 */
-func (l *Lexer) Tokenize(tokens []Token) (error, []Token) {
+func (l *Lexer) Tokenize() (error, []Token) {
+	tokens := []Token{}
+
+	return l.tokenize(tokens)
+}
+
+func (l *Lexer) tokenize(tokens []Token) (error, []Token) {
 	l.readWhitespace()
 
 	startRune := l.scanner.Peek()
@@ -132,7 +138,7 @@ func (l *Lexer) Tokenize(tokens []Token) (error, []Token) {
 
 		if isNewLine(l.scanner.Peek()) {
 			l.scanner.Next()
-			return l.Tokenize(tokens)
+			return l.tokenize(tokens)
 		}
 	} else if isDigit(startRune) {
 		// Rule: movetext = move , {move} ;
