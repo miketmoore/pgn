@@ -1,11 +1,50 @@
 package pgn
 
+import "fmt"
+
 type Game struct {
 	TagPairs []TagPair
+	Movetext []Movetext
 }
 
 type TagPair struct {
 	Name, Value string
+}
+
+type Movetext struct {
+	Num   int
+	White Move
+	Black Move
+}
+
+type File string
+type Rank int
+
+const (
+	FileA File = "a"
+	FileB File = "b"
+	FileC File = "c"
+	FileD File = "d"
+	FileE File = "e"
+	FileF File = "f"
+	FileG File = "g"
+	FileH File = "h"
+)
+
+const (
+	Rank1 Rank = 1
+	Rank2 Rank = 2
+	Rank3 Rank = 3
+	Rank4 Rank = 4
+	Rank5 Rank = 5
+	Rank6 Rank = 6
+	Rank7 Rank = 7
+	Rank8 Rank = 8
+)
+
+type Move struct {
+	File File
+	Rank Rank
 }
 
 type PGN struct {
@@ -50,12 +89,14 @@ func Unmarshal(in string, unmarshalled *PGN) error {
 func (u *unmarshaller) readTagPair() *TagPair {
 	tagPair := TagPair{}
 
+	fmt.Println("readTagPair peek 0")
 	token := u.peek()
-	if token.Type == TokenTagName {
+	if token != nil && token.Type == TokenTagName {
 		u.next()
 		tagPair.Name = token.Value
+		fmt.Println("readTagPair peek 1")
 		token = u.peek()
-		if token.Type == TokenTagValue {
+		if token != nil && token.Type == TokenTagValue {
 			u.next()
 			tagPair.Value = token.Value
 			return &tagPair

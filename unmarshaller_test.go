@@ -24,7 +24,7 @@ func TestUnmarshal(t *testing.T) {
 			},
 		},
 		{
-			name: "Tag pair",
+			name: "Game",
 			in: "[Event \"F/S Return Match\"]\n" +
 				"[Site \"Belgrade, Serbia JUG\"]\n" +
 				"[Date \"1992.11.04\"]\n[Round \"29\"]\n" +
@@ -33,7 +33,9 @@ func TestUnmarshal(t *testing.T) {
 				"[Result \"1/2-1/2\"]\n" +
 				"[a \"\"]\n" +
 				"[A \"\"]\n" +
-				"[_ \"\"]\n",
+				"[_ \"\"]\n" +
+				"\n" +
+				"1. e4 e5\n",
 			out: pgn.PGN{
 				Games: []pgn.Game{
 					pgn.Game{
@@ -48,6 +50,13 @@ func TestUnmarshal(t *testing.T) {
 							pgn.TagPair{Name: "a", Value: ""},
 							pgn.TagPair{Name: "A", Value: ""},
 							pgn.TagPair{Name: "_", Value: ""},
+						},
+						Movetext: []pgn.Movetext{
+							pgn.Movetext{
+								Num:   1,
+								White: pgn.Move{File: pgn.FileE, Rank: pgn.Rank4},
+								Black: pgn.Move{File: pgn.FileE, Rank: pgn.Rank5},
+							},
 						},
 					},
 				},
