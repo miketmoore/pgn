@@ -81,6 +81,8 @@ func Unmarshal(in string, unmarshalled *PGN) error {
 		}
 	}
 
+	fmt.Println("here", u.tokens)
+
 	unmarshalled.Games = append(unmarshalled.Games, game)
 
 	return nil
@@ -89,12 +91,10 @@ func Unmarshal(in string, unmarshalled *PGN) error {
 func (u *unmarshaller) readTagPair() *TagPair {
 	tagPair := TagPair{}
 
-	fmt.Println("readTagPair peek 0")
 	token := u.peek()
 	if token != nil && token.Type == TokenTagName {
 		u.next()
 		tagPair.Name = token.Value
-		fmt.Println("readTagPair peek 1")
 		token = u.peek()
 		if token != nil && token.Type == TokenTagValue {
 			u.next()

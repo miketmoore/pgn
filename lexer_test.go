@@ -361,6 +361,21 @@ func TestTokenize(t *testing.T) {
 				pgn.Token{Type: pgn.TokenRank, Value: "7"},
 			},
 		},
+		{
+			name: "newline separation between tag pairs and movetext",
+			in: `[Event "Blah Blah"]
+
+1. e4 e5`,
+			out: []pgn.Token{
+				pgn.Token{Type: pgn.TokenTagName, Value: "Event"},
+				pgn.Token{Type: pgn.TokenTagValue, Value: "Blah Blah"},
+				pgn.Token{Type: pgn.TokenMoveNumber, Value: "1"},
+				pgn.Token{Type: pgn.TokenFile, Value: "e"},
+				pgn.Token{Type: pgn.TokenRank, Value: "4"},
+				pgn.Token{Type: pgn.TokenFile, Value: "e"},
+				pgn.Token{Type: pgn.TokenRank, Value: "5"},
+			},
+		},
 		// {
 		// 	name: "Whole game of movetext",
 		// 	in: "1. e4 e5 2. Nf3 Nc6 3. Bb5 a6 {This opening is called the Ruy Lopez.}" +
