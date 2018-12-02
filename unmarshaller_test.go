@@ -86,6 +86,11 @@ func TestUnmarshal(t *testing.T) {
 					fmt.Println("Exp:", game.TagPairs)
 					t.Fatal("Unexpected total tag pairs")
 				}
+				if len(game.Movetext) != len(got.Movetext) {
+					fmt.Println("Got:", got.Movetext)
+					fmt.Println("Exp:", game.Movetext)
+					t.Fatal("Unexpected total movetext")
+				}
 			}
 		})
 	}
