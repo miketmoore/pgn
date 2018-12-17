@@ -26,15 +26,15 @@ func NewScanner(in string) Scanner {
 func (s *Scanner) Peek() rune {
 	// A "for range" loop is used because it decodes one UTF-8-encoded rune on
 	// each iteration.
-	for _, r := range s.stream {
+	for _, r := range s.stream[s.index:] {
 		return r
 	}
 	return NUL
 }
 
 func (s *Scanner) Next() rune {
-	for _, r := range s.stream {
-		s.stream = s.stream[1:]
+	for _, r := range s.stream[s.index:] {
+		s.index++
 		return r
 	}
 	return NUL
