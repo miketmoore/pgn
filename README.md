@@ -1,6 +1,6 @@
-# PGN Parser
+# :construction: PGN Parser
 
-This is a Portable Game Notation (PGN) parser written in Go.
+This is a Portable Game Notation (PGN) parser written in Go. Note: this is a work in progress and is the first parser I've built, so it is a learning project.
 
 ## Development
 
