@@ -389,7 +389,7 @@ func TestTokenize(t *testing.T) {
 				"[_ \"\"]\n" +
 				"\n" +
 				"1. e4 e5 2. Nf3 Nc6 3. Bb5 a6 {This opening is called the Ruy Lopez.}" +
-				"4. Ba4 Nf6 5. O-O Be7",
+				"4. Ba4 Nf6 5. O-O Be7 6. Re1 b5 7. Bb3 d6 8. c3 O-O 9. h3 Nb8 10. d4 Nbd7",
 			// "11. c4 c6 12. cxb5 axb5",
 			out: buildTokens(
 				[]pgn.Token{
@@ -425,24 +425,24 @@ func TestTokenize(t *testing.T) {
 					pgn.Token{Type: pgn.TokenFile, Value: "e"},
 					pgn.Token{Type: pgn.TokenRank, Value: "7"},
 				},
-				// newMove("6", "R", "e1", "", "b5"),
-				// newMove("7", "B", "b3", "", "d6"),
-				// []pgn.Token{
-				// 	pgn.Token{Type: pgn.TokenMoveNumber, Value: "8"},
-				// 	pgn.Token{Type: pgn.TokenFile, Value: "c"},
-				// 	pgn.Token{Type: pgn.TokenRank, Value: "3"},
-				// 	pgn.Token{Type: pgn.TokenCastleKingside, Value: "O-O"},
-				// },
-				// newMove("9", "", "h3", "N", "b8"),
-				// []pgn.Token{
-				// 	pgn.Token{Type: pgn.TokenMoveNumber, Value: "10"},
-				// 	pgn.Token{Type: pgn.TokenFile, Value: "d"},
-				// 	pgn.Token{Type: pgn.TokenRank, Value: "4"},
-				// 	pgn.Token{Type: pgn.TokenPiece, Value: "N"},
-				// 	pgn.Token{Type: pgn.TokenFile, Value: "b"},
-				// 	pgn.Token{Type: pgn.TokenFile, Value: "d"},
-				// 	pgn.Token{Type: pgn.TokenRank, Value: "7"},
-				// },
+				newMove("6", "R", "e1", "", "b5"),
+				newMove("7", "B", "b3", "", "d6"),
+				[]pgn.Token{
+					pgn.Token{Type: pgn.TokenMoveNumber, Value: "8"},
+					pgn.Token{Type: pgn.TokenFile, Value: "c"},
+					pgn.Token{Type: pgn.TokenRank, Value: "3"},
+					pgn.Token{Type: pgn.TokenCastleKingside, Value: "O-O"},
+				},
+				newMove("9", "", "h3", "N", "b8"),
+				[]pgn.Token{
+					pgn.Token{Type: pgn.TokenMoveNumber, Value: "10"},
+					pgn.Token{Type: pgn.TokenFile, Value: "d"},
+					pgn.Token{Type: pgn.TokenRank, Value: "4"},
+					pgn.Token{Type: pgn.TokenPiece, Value: "N"},
+					pgn.Token{Type: pgn.TokenFile, Value: "b"},
+					pgn.Token{Type: pgn.TokenFile, Value: "d"},
+					pgn.Token{Type: pgn.TokenRank, Value: "7"},
+				},
 				// newMove("11", "", "c4", "", "c6"),
 				// []pgn.Token{
 				// 	pgn.Token{Type: pgn.TokenMoveNumber, Value: "12"},
